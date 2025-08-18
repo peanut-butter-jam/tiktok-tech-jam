@@ -1,0 +1,31 @@
+[project]
+name = "api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.15.2",
+    "asyncpg>=0.30.0",
+    "datamodel-code-generator>=0.30.1",
+    "dotenv>=0.9.9",
+    "fastapi[standard]>=0.115.12",
+    "httpx>=0.28.1",
+    "openai>=1.90.0",
+    "psycopg2-binary>=2.9.10",
+    "pydantic-settings>=2.9.1",
+    "pyjwt>=2.10.1",
+    "sqlalchemy>=2.0.40",
+    "supabase>=2.15.2",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.13",
+]
+
+[tool.ruff]
+exclude = [
+  "app/database/schemas/models.py",
+  "app/clients/jira/models.py",
+]
