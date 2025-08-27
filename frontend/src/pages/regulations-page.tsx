@@ -6,7 +6,6 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableCaption,
 } from "@/components/table";
 import { Button } from "@/shared/ui/button";
 import { Plus, FileText, Eye, Trash2 } from "lucide-react";
@@ -14,15 +13,19 @@ import { Link } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 const RegulationsPage = () => {
+  const navigate = useNavigate();
+
   // Example data
   const regulations = [
-    { title: "Regulation 1", createdDate: "2023-08-01" },
-    { title: "Regulation 2", createdDate: "2023-08-15" },
-    { title: "Regulation 3", createdDate: "2023-09-01" },
-    { title: "Regulation 4", createdDate: "2023-09-10" },
-    { title: "Regulation 5", createdDate: "2023-09-20" },
-    { title: "Regulation 6", createdDate: "2023-09-25" },
+    { id: "1", title: "Regulation 1", createdDate: "2023-08-01" },
+    { id: "2", title: "Regulation 2", createdDate: "2023-08-15" },
+    { id: "3", title: "Regulation 3", createdDate: "2023-09-01" },
+    { id: "4", title: "Regulation 4", createdDate: "2023-09-10" },
+    { id: "5", title: "Regulation 5", createdDate: "2023-09-20" },
+    { id: "6", title: "Regulation 6", createdDate: "2023-09-25" },
   ];
 
   // Pagination state
@@ -38,6 +41,17 @@ const RegulationsPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  // Updated handleView function
+  const handleView = (id: string) => {
+    navigate(`/regulations/${id}`);
+  };
+
+  // Dummy logic for handleDelete
+  const handleDelete = (title: string) => {
+    console.log(`Deleting regulation: ${title}`);
+    // Later, replace this with a call to your custom hook or API logic
   };
 
   return (
@@ -79,17 +93,27 @@ const RegulationsPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedData.map((regulation, index) => (
-                <TableRow key={index}>
+              {paginatedData.map((regulation) => (
+                <TableRow key={regulation.id}>
                   <TableCell>{regulation.title}</TableCell>
                   <TableCell>{regulation.createdDate}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleView(regulation.id)}
+                      >
                         <Eye className="h-4 w-4 mr-1" />
+                        View
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(regulation.title)}
+                      >
                         <Trash2 className="h-4 w-4 mr-1 text-red-500" />
+                        Delete
                       </Button>
                     </div>
                   </TableCell>

@@ -71,4 +71,4 @@ const StatusBadge = ({ status, className }: StatusBadgeProps) => {
   );
 };
 
-export { StatusBadge };
+export { StatusBadge, Badge, badgeVariants };
