@@ -53,7 +53,7 @@ If text is ambiguous, still extract but keep desc clear about uncertainty.
         Build the input prompts for the LLM based on the context and sample data.
 
         Args:
-            data (pd.DataFrame): The DataFrame containing the data to be mapped.
+            text (str): The regulation text to extract ROUs from.
         """
         instruction = f"Extract all geo-regulatory ROUs from the following regulation text:\n\n{text}"
         messages = [SystemMessage(content=self.system_prompt), HumanMessage(content=instruction)]
