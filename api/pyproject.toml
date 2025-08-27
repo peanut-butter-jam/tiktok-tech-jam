@@ -1,5 +1,5 @@
 [project]
-name = "api"
+name = "app"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,10 +7,14 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.15.2",
     "asyncpg>=0.30.0",
+    "chromadb>=1.0.20",
     "datamodel-code-generator>=0.30.1",
     "dotenv>=0.9.9",
     "fastapi[standard]>=0.115.12",
     "httpx>=0.28.1",
+    "langchain-core>=0.3.74",
+    "langchain-openai>=0.3.31",
+    "langchain-text-splitters>=0.3.9",
     "openai>=1.90.0",
     "psycopg2-binary>=2.9.10",
     "pydantic-settings>=2.9.1",

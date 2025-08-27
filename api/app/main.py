@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.app_config import get_app_config
 from app.routers.auth_router import router as auth_router
+from app.routers.regulation_router import router as regulation_router
 
 app = FastAPI()
 allow_origins = get_app_config().core.allow_origins
@@ -17,3 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(regulation_router)
