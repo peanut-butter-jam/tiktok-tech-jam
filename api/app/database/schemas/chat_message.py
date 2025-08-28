@@ -3,8 +3,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
-from api.app.database.schemas.chat_session import ChatSession
-from schemas.enums.role import Role
+from app.database.schemas.enums.role import Role
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.database.schemas.chat_session import ChatSession
 
 
 class ChatMessage(Base, SerialIdMixin, TimestampMixin):
@@ -17,6 +20,6 @@ class ChatMessage(Base, SerialIdMixin, TimestampMixin):
         ForeignKey("chat_sessions.id"), nullable=False
     )
 
-    chat_session: Mapped[ChatSession] = relationship(
-        "chat_sessions", back_populates="chat_messages"
+    chat_session: Mapped["ChatSession"] = relationship(
+        "ChatSession", back_populates="chat_messages"
     )

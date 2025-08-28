@@ -5,10 +5,12 @@ from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
 from app.database.schemas.enums.status import Status
 from sqlalchemy import ForeignKey
-from api.app.database.schemas.feature import Feature
 from sqlalchemy.orm import relationship
-from api.app.database.schemas.check_regulation import CheckRegulation
-from typing import List
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.database.schemas.feature import Feature
+    from app.database.schemas.check_regulation import CheckRegulation
 
 
 class Check(Base, SerialIdMixin, TimestampMixin):
@@ -22,8 +24,8 @@ class Check(Base, SerialIdMixin, TimestampMixin):
     feature_id: Mapped[int] = mapped_column(
         ForeignKey("features.id"), nullable=False, unique=True
     )
+    feature: Mapped["Feature"] = relationship("Feature", back_populates="checks")
 
-    feature: Mapped[Feature] = relationship("features", back_populates="checks")
-    checks_regulations: Mapped[List[CheckRegulation]] = relationship(
-        "checks_regulations", back_populates="check"
+    checks_regulations: Mapped[List["CheckRegulation"]] = relationship(
+        "CheckRegulation", back_populates="check"
     )

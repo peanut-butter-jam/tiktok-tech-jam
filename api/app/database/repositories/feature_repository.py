@@ -1,6 +1,6 @@
 from app.database.repositories.session import AsyncDbSessionDep
 from app.database.schemas.feature import Feature
-from api.app.database.repositories.base_repository import BaseRepository
+from app.database.repositories.base_repository import BaseRepository
 from typing import Annotated
 from fastapi import Depends
 

@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends
 from app.database.schemas.chat_message import ChatMessage
 from app.database.repositories.session import AsyncDbSessionDep
-from api.app.database.repositories.base_repository import BaseRepository
+from app.database.repositories.base_repository import BaseRepository
 
 
 class ChatMessageRepository(BaseRepository[ChatMessage]):

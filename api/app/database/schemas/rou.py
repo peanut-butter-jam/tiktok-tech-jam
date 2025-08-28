@@ -6,7 +6,7 @@ from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
 from sqlalchemy import ForeignKey
-from api.app.database.schemas.regulation import Regulation
+from app.database.schemas.regulation import Regulation
 from sqlalchemy.orm import relationship
 
 
@@ -18,11 +18,9 @@ class RegulatoryObligationUnit(Base, SerialIdMixin, TimestampMixin):
     desc: Mapped[str] = mapped_column(Text, nullable=False)
     obligations: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     jurisdiction: Mapped[str] = mapped_column(String, nullable=False)
-    source_id: Mapped[int] = mapped_column(ForeignKey("regulations.id"), nullable=False)
 
-    source: Mapped[Regulation] = relationship(
-        "regulations", back_populates="regulatory_obligation_units"
-    )
+    source_id: Mapped[int] = mapped_column(ForeignKey("regulations.id"), nullable=False)
+    source: Mapped["Regulation"] = relationship("Regulation", back_populates="rous")
 
 
 ROU = RegulatoryObligationUnit
