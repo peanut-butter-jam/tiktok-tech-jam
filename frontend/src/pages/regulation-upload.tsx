@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { DropBox } from "../components/drop-box";
-import { SubmitButton } from "../components/button";
+import { DropBox } from "@/components/drop-box";
+import { SubmitButton } from "@/components/button";
 import NavBar from "@/components/nav-bar";
 import { Upload } from "lucide-react";
+import axios from "axios";
+import { baseUrl } from "@/lib/constants";
 
 const RegulationUpload: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -13,6 +15,10 @@ const RegulationUpload: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const axiosInstance = axios.create({
+      baseURL: baseUrl,
+    });
+    
     if (uploadedFiles.length === 0) {
       alert("Please upload at least one file before submitting.");
       return;
@@ -22,16 +28,13 @@ const RegulationUpload: React.FC = () => {
 
     try {
       const formData = new FormData();
-      uploadedFiles.forEach((file, index) => {
-        formData.append(`file${index}`, file);
+      uploadedFiles.forEach((file) => {
+        formData.append(file.name, file);
       });
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await axiosInstance.post("/regulations/upload", formData);
 
-      if (response.ok) {
+      if (response.status === 200) {
         alert("Files uploaded successfully!");
         setUploadedFiles([]);
       } else {
