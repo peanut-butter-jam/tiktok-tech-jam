@@ -11,9 +11,21 @@ class FeatureDTO(BaseModel):
     mdel_config = ConfigDict(from_attributes=True)
 
     id: int
-    title: str = Field(..., description="The name of the feature")
-    description: str = Field(..., description="A brief description of the feature")
-    checks: list[CheckDTO] = Field(
-        ..., description="List of associated checks for this feature"
-    )
-    created_at: datetime = Field(..., description="The creation date of the feature")
+    title: str = Field(...)
+    description: str | None = Field(...)
+
+
+class CreateFeatureDTO(FeatureDTO):
+    """
+    DTO for creating a new Feature
+    """
+
+
+class GetFeatureDTO(FeatureDTO):
+    """
+    DTO for retrieving a Feature
+    """
+
+    created_at: datetime | None = Field(...)
+    updated_at: datetime | None = Field(...)
+    checks: list[CheckDTO] | None = Field(...)
