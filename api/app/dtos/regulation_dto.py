@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import Optional
+from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 from rou_dto import RouDto
 
@@ -12,9 +13,21 @@ class RegulationDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    title: str = Field(..., description="The title of the regulation")
-    file_object_id: str = Field(..., description="The ID of the associated file object")
-    rous: Optional[list[RouDto]] = Field(
-        ..., description="List of associated Regulatory Obligation Units (ROUs)"
-    )
-    created_at: datetime = Field(..., description="The creation date of the regulation")
+    title: str = Field(...)
+    file_object_id: UUID | None = Field(...)
+
+
+class CreateRegulationDTO(RegulationDTO):
+    """
+    DTO for creating a new Regulation
+    """
+
+
+class GetRegulationDTO(RegulationDTO):
+    """
+    DTO for retrieving a Regulation
+    """
+
+    created_at: datetime = Field(...)
+    updated_at: datetime = Field(...)
+    rous: list[RouDto] | None = Field(...)

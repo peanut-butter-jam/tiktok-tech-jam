@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
-from sqlalchemy.dialects.postgresql import UUID
+from uuid import UUID
 
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
