@@ -36,5 +36,14 @@ class RegulationService:
 
         return [RouDto.model_validate(rou) for rou in inserted_models]
 
+    async def query_relevant_rous(self, query: str) -> List[RouDto]:
+        rous_collection: Collection = self.chromadb_client.get_collection(ROU_COLLECTION_NAME)
+        results = rous_collection.query(query_texts=[query])
+
+        rou_ids = [int(i) for i in results["ids"][0]]
+        return [
+            RouDto.model_validate(rou) for rou in await self.rou_repository.get_by_filter(id=rou_ids)
+        ]
+
 
 RegulationServiceDep = Annotated[RegulationService, Depends(RegulationService)]

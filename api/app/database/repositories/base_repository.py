@@ -170,8 +170,15 @@ class BaseRepository(Generic[Model]):
         Returns:
             list[Model]: List of model instances that match the filter criteria.
         """
-        q = select(self.model).where(
-            *[getattr(self.model, key) == value for key, value in kwargs.items()]
-        )
+        conditions = []
+
+        for key, value in kwargs.items():
+            col = getattr(self.model, key)
+            if isinstance(value, (list, tuple, set)):
+                conditions.append(col.in_(value))
+            else:
+                conditions.append(col == value)
+
+        q = select(self.model).where(*conditions)
         rows = await self.session.execute(q)
         return list(rows.unique().scalars().all())
