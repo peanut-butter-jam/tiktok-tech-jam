@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile
 from app.services.regulation.pdf_reader import read_pdf
+from app.services.regulation.rou_extraction.map_reduce_rou_extractor import MapReduceRouExtractorDep
 from app.dtos.feature_dto import FeatureDto
 from app.services.regulation.feat_eval.feat_eval_agent import FeatEvalAgentDep
 from app.services.regulation.regulation_service import RegulationServiceDep
@@ -8,13 +9,11 @@ from app.services.regulation.regulation_service import RegulationServiceDep
 router = APIRouter(prefix="/regulations", tags=["Regulations"])
 
 
-@router.post("/")
-async def upload_regulation(regulation: str, regulation_service: RegulationServiceDep):
-    """
-    Create a new regulation.
-    """
-
-    return await regulation_service.upload_regulation(regulation)
+# @router.post("/")
+# async def upload_regulation(regulation: str, regulation_service: RegulationServiceDep):
+#     """
+#     Create a new regulation.
+#     """
 
 
 @router.post("/test_evaluate")
@@ -25,7 +24,17 @@ async def evaluate_feature(feature: FeatureDto, eval_agent: FeatEvalAgentDep):
     return await eval_agent.evaluate(feature)
 
 
-@router.post("/upload_pdf")
-async def upload_pdf(file: UploadFile):
-    regulation_text = read_pdf(file)
-    return regulation_text
+@router.post("/test_upload_regulation")
+async def test_upload_regulation(
+    regulation: UploadFile,
+    map_reduce_rou_extractor: MapReduceRouExtractorDep,
+    regulation_service: RegulationServiceDep,
+):
+    """
+    Test the map-reduce functionality.
+    """
+    text = read_pdf(regulation)
+
+    extracted_rous = await map_reduce_rou_extractor.extract(text)
+
+    return await regulation_service.upload_regulation(extracted_rous)
