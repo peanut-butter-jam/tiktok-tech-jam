@@ -9,20 +9,27 @@ import RegulationUpload from "./pages/regulation-upload";
 import { FeatureUpload } from "./pages/feature-upload";
 import FeaturesPage from "./pages/features-page";
 import FeatureView from "./pages/feature-view-page";
+import { Chatbot } from "./components/chatbot";
+import { useChatbot } from "./hooks/use-chatbot";
 
-const App: React.FC = () => (
-  <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-    <Routes>
-      <Route path="/" element={<MainPage />} />
-      <Route path="/regulations" element={<RegulationsPage />} />
-      <Route path="/regulations/:id" element={<RegulationView />} />
-      <Route path="/regulations/upload" element={<RegulationUpload />} />
-      <Route path="/features" element={<FeaturesPage />} />
-      <Route path="/features/:id" element={<FeatureView />} />
-      <Route path="/features/upload" element={<FeatureUpload />} />
-    </Routes>
-    <Toaster richColors />
-  </ThemeProvider>
-);
+const App: React.FC = () => {
+  const { sendMessage } = useChatbot();
+
+  return (
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/regulations" element={<RegulationsPage />} />
+        <Route path="/regulations/:id" element={<RegulationView />} />
+        <Route path="/regulations/upload" element={<RegulationUpload />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/features/:id" element={<FeatureView />} />
+        <Route path="/features/upload" element={<FeatureUpload />} />
+      </Routes>
+      <Toaster richColors />
+      <Chatbot onSendMessage={sendMessage} />
+    </ThemeProvider>
+  );
+};
 
 export default App;

@@ -8,7 +8,6 @@ const NavBar = () => {
     { to: "/", icon: Home, label: "Home" },
     { to: "/regulations", icon: FileText, label: "Regulations" },
     { to: "/features", icon: List, label: "Features" },
-    { to: "/chat", icon: MessageSquare, label: "AI Assistant" },
   ];
 
   return (
