@@ -3,8 +3,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
-from schemas.checks import Check
-from schemas.regulations import Regulation
+from api.app.database.schemas.check import Check
+from api.app.database.schemas.regulation import Regulation
 
 
 class CheckRegulation(Base, SerialIdMixin, TimestampMixin):

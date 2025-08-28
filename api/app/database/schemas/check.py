@@ -5,9 +5,9 @@ from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
 from app.database.schemas.enums.status import Status
 from sqlalchemy import ForeignKey
-from schemas.features import Feature
+from api.app.database.schemas.feature import Feature
 from sqlalchemy.orm import relationship
-from schemas.check_regulations import CheckRegulation
+from api.app.database.schemas.check_regulation import CheckRegulation
 from typing import List
 
 

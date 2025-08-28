@@ -5,7 +5,7 @@ from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.mixins.uuid_mixin import UuidMixin
 from app.database.schemas.base import Base
 from sqlalchemy.orm import relationship
-from schemas.regulations import Regulation
+from api.app.database.schemas.regulation import Regulation
 
 
 class FileObject(Base, UuidMixin, TimestampMixin):

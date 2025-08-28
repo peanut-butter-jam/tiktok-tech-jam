@@ -6,7 +6,7 @@ from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
 from sqlalchemy import ForeignKey
-from schemas.regulations import Regulation
+from api.app.database.schemas.regulation import Regulation
 from sqlalchemy.orm import relationship
 
 
