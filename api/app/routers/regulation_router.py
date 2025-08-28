@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-
+from fastapi import APIRouter, UploadFile
+from app.services.regulation.pdf_reader import read_pdf
 from app.dtos.feature_dto import FeatureDto
 from app.services.regulation.feat_eval.feat_eval_agent import FeatEvalAgentDep
 from app.services.regulation.regulation_service import RegulationServiceDep
@@ -23,3 +23,9 @@ async def evaluate_feature(feature: FeatureDto, eval_agent: FeatEvalAgentDep):
     Evaluate a feature for geo-specific compliance needs.
     """
     return await eval_agent.evaluate(feature)
+
+
+@router.post("/upload_pdf")
+async def upload_pdf(file: UploadFile):
+    regulation_text = read_pdf(file)
+    return regulation_text
