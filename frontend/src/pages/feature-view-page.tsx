@@ -4,69 +4,75 @@ import { Settings, ArrowLeft, FileText } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 
-// Define the Regulation type
-interface Regulation {
+// Define the Feature type
+interface Feature {
   id: string;
   name: string;
   description: string;
   createdAt: string;
   lastChecked: string | null;
-  country: string;
+  category: string;
+  status: string;
+  reasoning: string;
   relatedDocuments: { name: string; size: number }[];
 }
 
-const RegulationView = () => {
+const FeatureView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [regulation, setRegulation] = useState<Regulation | null>(null);
+  const [feature, setFeature] = useState<Feature | null>(null);
   const [facts, setFacts] = useState<string[]>([]);
 
   // Dummy data
-  const dummyRegulations: Regulation[] = [
+  const dummyFeatures: Feature[] = [
     {
       id: "1",
-      name: "Example Regulation 1",
-      description: "This is the first example regulation description.",
+      name: "Example Feature 1",
+      description: "This is the first example feature description.",
       createdAt: "2023-08-01",
       lastChecked: "2023-09-01",
-      country: "United States",
+      category: "User Interface",
+      status: "Compliant",
+      reasoning:
+        "This feature adheres to all current accessibility guidelines and privacy regulations. It implements proper data handling and user consent mechanisms.",
       relatedDocuments: [
-        { name: "Document 1.pdf", size: 2048 },
-        { name: "Document 2.docx", size: 1024 },
+        { name: "Feature_Spec_1.pdf", size: 2048 },
+        { name: "Design_Doc_1.docx", size: 1024 },
       ],
     },
     {
       id: "2",
-      name: "Example Regulation 2",
-      description: "This is the second example regulation description.",
+      name: "Example Feature 2",
+      description: "This is the second example feature description.",
       createdAt: "2023-07-15",
       lastChecked: "2023-08-20",
-      country: "Canada",
+      category: "Backend",
+      status: "Non-Compliant",
+      reasoning:
+        "This feature requires updates to meet the latest data retention policies. The current implementation stores user data longer than permitted under GDPR.",
       relatedDocuments: [],
     },
   ];
 
   const dummyFacts: string[] = [
-    "This regulation was enacted to ensure data privacy.",
-    "It applies to all companies handling user data.",
-    "Non-compliance may result in significant fines.",
+    "This feature was implemented to improve user experience.",
+    "It integrates with the existing authentication system.",
+    "Performance testing shows 25% improvement in load times.",
   ];
 
-  const loadRegulation = () => {
-    // Find the regulation with the matching `id`
-    const regulationData = dummyRegulations.find(
-      (regulation) => regulation.id === id
-    );
+  const loadFeature = () => {
+    // Find the feature with the matching `id`
+    const featureData = dummyFeatures.find((feature) => feature.id === id);
 
-    // Set the regulation data (or null if not found)
-    setRegulation(regulationData || null);
+    // Set the feature data (or null if not found)
+    setFeature(featureData || null);
 
     // Set dummy facts for now
     setFacts(dummyFacts);
   };
 
   useEffect(() => {
-    loadRegulation();
+    loadFeature();
   }, [id]);
 
   // Handle download logic
@@ -84,15 +90,12 @@ const RegulationView = () => {
             <div className="flex items-center space-x-4">
               <Settings className="h-10 w-10" />
               <div>
-                <h1 className="text-3xl font-bold">{regulation?.name}</h1>
-                <p className="text-lg opacity-90">Regulation Details</p>
+                <h1 className="text-3xl font-bold">{feature?.name}</h1>
+                <p className="text-lg opacity-90">Feature Details</p>
               </div>
             </div>
             <div className="flex space-x-3">
-              <Button
-                variant="secondary"
-                onClick={() => navigate("/regulations")}
-              >
+              <Button variant="secondary" onClick={() => navigate("/features")}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to List
               </Button>
@@ -107,10 +110,10 @@ const RegulationView = () => {
           <div className="border rounded-lg p-6 space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2 text-foreground">
-                Regulation Name
+                Feature Name
               </h3>
               <p className="text-foreground bg-muted p-4 rounded-lg">
-                {regulation?.name}
+                {feature?.name}
               </p>
             </div>
 
@@ -119,7 +122,7 @@ const RegulationView = () => {
                 Description
               </h3>
               <div className="text-foreground bg-muted p-4 rounded-lg whitespace-pre-wrap">
-                {regulation?.description}
+                {feature?.description}
               </div>
             </div>
 
@@ -129,7 +132,7 @@ const RegulationView = () => {
                   Added to System
                 </h3>
                 <p className="text-foreground bg-muted p-4 rounded-lg">
-                  {regulation?.createdAt || "Date not available"}
+                  {feature?.createdAt || "Date not available"}
                 </p>
               </div>
 
@@ -138,17 +141,43 @@ const RegulationView = () => {
                   Last Checked
                 </h3>
                 <p className="text-foreground bg-muted p-4 rounded-lg">
-                  {regulation?.lastChecked || "Not yet analyzed"}
+                  {feature?.lastChecked || "Not yet analyzed"}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-foreground">
-                  Country/Region
+                  Category
                 </h3>
                 <p className="text-foreground bg-muted p-4 rounded-lg">
-                  {regulation?.country || "Not specified"}
+                  {feature?.category || "Not specified"}
                 </p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-foreground">
+                  Status
+                </h3>
+                <p
+                  className={`p-4 rounded-lg font-medium ${
+                    feature?.status === "Compliant"
+                      ? "text-green-700 bg-green-50 border border-green-200"
+                      : feature?.status === "Non-Compliant"
+                      ? "text-red-700 bg-red-50 border border-red-200"
+                      : "text-foreground bg-muted"
+                  }`}
+                >
+                  {feature?.status || "Not specified"}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">
+                Reasoning
+              </h3>
+              <div className="text-foreground bg-muted p-4 rounded-lg whitespace-pre-wrap">
+                {feature?.reasoning || "No reasoning provided"}
               </div>
             </div>
           </div>
@@ -158,10 +187,10 @@ const RegulationView = () => {
             <h3 className="text-lg font-semibold mb-4 text-foreground">
               Related Documents
             </h3>
-            {regulation?.relatedDocuments &&
-            regulation.relatedDocuments.length > 0 ? (
+            {feature?.relatedDocuments &&
+            feature.relatedDocuments.length > 0 ? (
               <div className="space-y-2">
-                {regulation.relatedDocuments.map((doc, index) => (
+                {feature.relatedDocuments.map((doc, index) => (
                   <div
                     key={index}
                     className="flex items-center space-x-2 p-3 bg-muted rounded-lg"
@@ -191,10 +220,10 @@ const RegulationView = () => {
             )}
           </div>
 
-          {/* Facts About the Regulation */}
+          {/* Facts About the Feature */}
           <div className="border rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-4 text-foreground">
-              Facts About the Regulation
+              Facts About the Feature
             </h3>
             <ul className="list-disc list-inside space-y-2">
               {facts.map((fact, index) => (
@@ -210,4 +239,4 @@ const RegulationView = () => {
   );
 };
 
-export default RegulationView;
+export default FeatureView;

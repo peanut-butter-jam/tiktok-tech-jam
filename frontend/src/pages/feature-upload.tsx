@@ -3,6 +3,7 @@ import { TextBox } from "../components/text-box";
 import { SubmitButton } from "../components/button";
 import NavBar from "@/components/nav-bar";
 import { Plus } from "lucide-react";
+import axios from "axios";
 
 export const FeatureUpload: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -10,31 +11,31 @@ export const FeatureUpload: React.FC = () => {
   const [documentation, setDocumentation] = useState("");
 
   const handleSubmit = async () => {
+    const axiosInstance = axios.create({
+      baseURL: "/api",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
     if (!title.trim() || !description.trim() || !documentation.trim()) {
       alert("Please fill in all fields");
       return;
     }
 
     try {
-      const response = await fetch("/api/features", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim(),
-          documentation: documentation.trim(),
-        }),
+      const response = await axiosInstance.post("/features/upload", {
+        title: title.trim(),
+        description: description.trim(),
+        documentation: documentation.trim(),
       });
 
-      if (!response.ok) {
+      if (response.status === 200) {
+        // Handle successful response
+        console.log("Feature uploaded successfully");
+      } else {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const result = await response.json();
-      console.log("Feature uploaded:", result);
-      alert("Feature uploaded successfully!");
 
       // Reset form
       setTitle("");
