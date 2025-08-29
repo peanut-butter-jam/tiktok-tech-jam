@@ -6,11 +6,9 @@ import RegulationView from "./pages/regulation-view-page";
 import { ThemeProvider } from "./contexts/theme/theme-provider";
 import { Toaster } from "./shared/ui/sonner";
 import RegulationUpload from "./pages/regulation-upload";
-import { FeatureUpload } from "./pages/feature-upload";
-import FeaturesPage from "./pages/features-page";
-import FeatureView from "./pages/feature-view-page";
 import { Chatbot } from "./components/chatbot";
 import { useChatbot } from "./hooks/use-chatbot";
+import FeaturesPage from "./pages/feature";
 
 const App: React.FC = () => {
   const { sendMessage } = useChatbot();
@@ -23,8 +21,6 @@ const App: React.FC = () => {
         <Route path="/regulations/:id" element={<RegulationView />} />
         <Route path="/regulations/upload" element={<RegulationUpload />} />
         <Route path="/features" element={<FeaturesPage />} />
-        <Route path="/features/:id" element={<FeatureView />} />
-        <Route path="/features/upload" element={<FeatureUpload />} />
       </Routes>
       <Toaster richColors />
       <Chatbot onSendMessage={sendMessage} />

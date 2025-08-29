@@ -207,7 +207,7 @@ export interface components {
              * Description
              * @description A brief description of the feature
              */
-            description: string | null;
+            description: string;
         };
         /**
          * FeatureDTOWithCheck
@@ -223,7 +223,7 @@ export interface components {
              * Description
              * @description A brief description of the feature
              */
-            description: string | null;
+            description: string;
             /** Id */
             id: number;
             /**

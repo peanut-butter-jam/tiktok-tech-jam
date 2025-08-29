@@ -11,7 +11,7 @@ class FeatureCreateDTO(BaseModel):
     """
 
     title: str = Field(..., description="The name of the feature")
-    description: str | None = Field(..., description="A brief description of the feature")
+    description: str = Field(..., description="A brief description of the feature")
 
 
 class FeatureDTO(FeatureCreateDTO):
