@@ -12,20 +12,84 @@ import { Plus, Settings, Eye, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
+import type { Feature } from "@/types/feature";
 
 const FeaturesPage = () => {
   const navigate = useNavigate();
 
   // Example data
-  const features = [
-    { id: "1", title: "Feature 1", createdDate: "2023-08-01" },
-    { id: "2", title: "Feature 2", createdDate: "2023-08-15" },
-    { id: "3", title: "Feature 3", createdDate: "2023-09-01" },
-    { id: "4", title: "Feature 4", createdDate: "2023-09-10" },
-    { id: "5", title: "Feature 5", createdDate: "2023-09-20" },
-    { id: "6", title: "Feature 6", createdDate: "2023-09-25" },
+  const features: Feature[] = [
+    {
+      id: "1",
+      name: "Feature 1",
+      description: "Description for Feature 1",
+      createdAt: "2023-08-01",
+      updatedAt: "2023-08-15",
+      status: "Active",
+      reasoning: "Feature is working as expected",
+      flag: false,
+      regulationsViolated: [],
+    },
+    {
+      id: "2",
+      name: "Feature 2",
+      description: "Description for Feature 2",
+      createdAt: "2023-08-15",
+      updatedAt: "2023-08-20",
+      status: "Active",
+      reasoning: "Feature meets security requirements",
+      flag: false,
+      regulationsViolated: [],
+    },
+    {
+      id: "3",
+      name: "Feature 3",
+      description: "Description for Feature 3",
+      createdAt: "2023-09-01",
+      updatedAt: null,
+      status: "Inactive",
+      reasoning: "Feature needs performance optimization",
+      flag: false,
+      regulationsViolated: [],
+    },
+    {
+      id: "4",
+      name: "Feature 4",
+      description: "Description for Feature 4",
+      createdAt: "2023-09-10",
+      updatedAt: "2023-09-15",
+      status: "Active",
+      reasoning: "Feature improves user experience",
+      flag: false,
+      regulationsViolated: [],
+    },
+    {
+      id: "5",
+      name: "Feature 5",
+      description: "Description for Feature 5",
+      createdAt: "2023-09-20",
+      updatedAt: "2023-09-25",
+      status: "Active",
+      reasoning: "API integration working correctly",
+      flag: true,
+      regulationsViolated: [{
+        id: "1",
+        name: "Regulation 1",
+        description: "Description for Regulation 1",
+      }],
+    },
+    {
+      id: "6",
+      name: "Feature 6",
+      description: "Description for Feature 6",
+      createdAt: "2023-09-25",
+      updatedAt: null,
+      status: "Inactive",
+      reasoning: "Database optimization required",
+      flag: false,
+      regulationsViolated: [],
+    },
   ];
 
   // Pagination state
@@ -44,13 +108,13 @@ const FeaturesPage = () => {
   };
 
   // Updated handleView function
-  const handleView = (id: string) => {
-    navigate(`/features/${id}`);
+  const handleView = (feature: Feature) => {
+    navigate(`/features/${feature.id}`, { state: { feature } });
   };
 
   // Dummy logic for handleDelete
-  const handleDelete = (title: string) => {
-    console.log(`Deleting feature: ${title}`);
+  const handleDelete = (name: string) => {
+    console.log(`Deleting feature: ${name}`);
     // Later, replace this with a call to your custom hook or API logic
   };
 
@@ -87,22 +151,25 @@ const FeaturesPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Created Date</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedData.map((feature) => (
                 <TableRow key={feature.id}>
-                  <TableCell>{feature.title}</TableCell>
-                  <TableCell>{feature.createdDate}</TableCell>
+                  <TableCell>{feature.name}</TableCell>
+                  <TableCell>{feature.createdAt}</TableCell>
+                  <TableCell>{feature.status}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleView(feature.id)}
+                        onClick={() => handleView(feature)}
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         View
@@ -110,7 +177,7 @@ const FeaturesPage = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(feature.title)}
+                        onClick={() => handleDelete(feature.name)}
                       >
                         <Trash2 className="h-4 w-4 mr-1 text-red-500" />
                         Delete
