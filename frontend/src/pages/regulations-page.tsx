@@ -3,29 +3,70 @@ import {
   Table,
   TableHeader,
   TableBody,
-  TableHead,
   TableRow,
   TableCell,
 } from "@/components/table";
 import { Button } from "@/shared/ui/button";
-import { Plus, FileText, Eye, Trash2 } from "lucide-react";
+import { Plus, FileText, Info, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
+
+// Define the Regulation type
+interface Regulation {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  details: {
+    id: string;
+    section: string;
+    description: string;
+  }[];
+}
 
 const RegulationsPage = () => {
   const navigate = useNavigate();
 
   // Example data
-  const regulations = [
-    { id: "1", title: "Regulation 1", createdDate: "2023-08-01" },
-    { id: "2", title: "Regulation 2", createdDate: "2023-08-15" },
-    { id: "3", title: "Regulation 3", createdDate: "2023-09-01" },
-    { id: "4", title: "Regulation 4", createdDate: "2023-09-10" },
-    { id: "5", title: "Regulation 5", createdDate: "2023-09-20" },
-    { id: "6", title: "Regulation 6", createdDate: "2023-09-25" },
+  const regulations: Regulation[] = [
+    {
+      id: "1",
+      name: "EU Digital Service Law",
+      description: "REGULATION (EU) 2022/2065 OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL",
+      createdAt: "2023-08-01",
+      details: [
+        {
+          id: "1",
+          section: "Orders to act against illegal content",
+          description: "This section mandates the removal of illegal content.",
+        },
+        {
+          id: "2",
+          section: "Compliance",
+          description: "This section outlines the compliance requirements.",
+        },
+      ],
+    },
+    {
+      id: "2",
+      name: "California State Law",
+      description: "CALIFORNIA CONSUMER PRIVACY ACT (CCPA)",
+      createdAt: "2023-07-15",
+      details: [
+        {
+          id: "1",
+          section: "Overview",
+          description: "This section provides an overview of the California State Law.",
+        },
+        {
+          id: "2",
+          section: "Compliance",
+          description: "This section outlines the compliance requirements.",
+        },
+      ],
+    },
   ];
 
   // Pagination state
@@ -44,13 +85,15 @@ const RegulationsPage = () => {
   };
 
   // Updated handleView function
-  const handleView = (id: string) => {
-    navigate(`/regulations/${id}`);
+  const handleView = (regulation: Regulation) => {
+    navigate(`/regulations/${regulation.id}`, {
+      state: { regulation },
+    });
   };
 
   // Dummy logic for handleDelete
-  const handleDelete = (title: string) => {
-    console.log(`Deleting regulation: ${title}`);
+  const handleDelete = (id: string) => {
+    console.log(`Deleting regulation: ${id}`);
     // Later, replace this with a call to your custom hook or API logic
   };
 
@@ -87,30 +130,31 @@ const RegulationsPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Created Date</TableHead>
-                <TableHead>Action</TableHead>
+                <TableCell>Name</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Created At</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedData.map((regulation) => (
                 <TableRow key={regulation.id}>
-                  <TableCell>{regulation.title}</TableCell>
-                  <TableCell>{regulation.createdDate}</TableCell>
+                  <TableCell>{regulation.name}</TableCell>
+                  <TableCell>{regulation.description}</TableCell>
+                  <TableCell>{regulation.createdAt}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleView(regulation.id)}
+                        onClick={() => handleView(regulation)}
                       >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
+                        <Info className="h-4 w-4 mr-1" />
+                        Details
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(regulation.title)}
+                        onClick={() => handleDelete(regulation.id)}
                       >
                         <Trash2 className="h-4 w-4 mr-1 text-red-500" />
                         Delete
