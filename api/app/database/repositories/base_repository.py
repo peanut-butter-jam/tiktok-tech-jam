@@ -64,7 +64,9 @@ class BaseRepository(Generic[Model]):
         rows = await self.session.execute(q)
         return list(rows.unique().scalars().all())
 
-    async def get_one_by_id(self, id: UUID, options: list[ORMOption] | None = None) -> Model | None:
+    async def get_one_by_id(
+        self, id: UUID | int, options: list[ORMOption] | None = None
+    ) -> Model | None:
         """
         Get a single instance of the model by its ID.
 
@@ -108,7 +110,9 @@ class BaseRepository(Generic[Model]):
         res = await self.update_many_by_ids([id], data)
         return res[0] if res else None
 
-    async def update_many_by_ids(self, ids: list[UUID | int], data: BaseModel) -> list[Model]:
+    async def update_many_by_ids(
+        self, ids: list[UUID | int], data: BaseModel
+    ) -> list[Model]:
         """
         Update multiple instances of the model by their IDs.
 
@@ -133,7 +137,7 @@ class BaseRepository(Generic[Model]):
 
         return instances
 
-    async def delete_by_id(self, id: UUID) -> int:
+    async def delete_by_id(self, id: UUID | int) -> int:
         """
         Delete a single instance of the model by its ID.
 
@@ -145,7 +149,7 @@ class BaseRepository(Generic[Model]):
         """
         return await self.delete_many_by_ids([id])
 
-    async def delete_many_by_ids(self, ids: list[UUID]) -> int:
+    async def delete_many_by_ids(self, ids: list[UUID | int]) -> int:
         """
         Delete multiple instances of the model by their IDs.
 

@@ -22,10 +22,16 @@ class RouDto(BaseModel):
 
     id: int
     type: RouType
-    canonical_text: str = Field(..., description="The key regulatory requirement in concise form")
+    canonical_text: str = Field(
+        ..., description="The key regulatory requirement in concise form"
+    )
     desc: str = Field(..., description="A short human-friendly description of the ROU")
-    obligations: list[str] = Field(..., description="The specific actions or duties required")
-    jurisdiction: str = Field(..., description="The country or region this ROU applies to")
+    obligations: list[str] = Field(
+        ..., description="The specific actions or duties required"
+    )
+    jurisdiction: str = Field(
+        ..., description="The country or region this ROU applies to"
+    )
     source_id: int = Field(..., description="The source ID of the ROU")
     created_at: datetime = Field(..., description="The creation date of the ROU")
 
