@@ -8,7 +8,9 @@ from pydantic import BaseModel
 from langgraph.types import Send
 from langgraph.graph import END, START, StateGraph
 
-from app.services.regulation.rou_extraction.rou_deduplicate_model import RouDedupModelDep
+from app.services.regulation.rou_extraction.rou_deduplicate_model import (
+    RouDedupModelDep,
+)
 from app.dtos.extraction_result import ExtractedRouDto
 from app.services.regulation.rou_extraction.rou_extract_model import RouExtractModelDep
 
@@ -27,11 +29,13 @@ class MapInputState(BaseModel):
     chunk: str
 
 
-semaphore = asyncio.Semaphore(50)
+semaphore = asyncio.Semaphore(20)
 
 
 class MapReduceRouExtractor:
-    def __init__(self, rou_extractor_model: RouExtractModelDep, rou_dedup_model: RouDedupModelDep):
+    def __init__(
+        self, rou_extractor_model: RouExtractModelDep, rou_dedup_model: RouDedupModelDep
+    ):
         self.text_splitter = RecursiveCharacterTextSplitter()
         self.map_model = rou_extractor_model
         self.reduce_model = rou_dedup_model
@@ -46,7 +50,9 @@ class MapReduceRouExtractor:
         graph.add_node("reduce_rous", self.reduce_rous)
 
         graph.add_edge(START, "generate_chunks")
-        graph.add_conditional_edges("generate_chunks", self.continue_to_map, ["map_extract"])
+        graph.add_conditional_edges(
+            "generate_chunks", self.continue_to_map, ["map_extract"]
+        )
         graph.add_edge("map_extract", "reduce_rous")
         graph.add_edge("reduce_rous", END)
 
@@ -77,4 +83,6 @@ class MapReduceRouExtractor:
         return res["final_rous"]
 
 
-MapReduceRouExtractorDep = Annotated[MapReduceRouExtractor, Depends(MapReduceRouExtractor)]
+MapReduceRouExtractorDep = Annotated[
+    MapReduceRouExtractor, Depends(MapReduceRouExtractor)
+]

@@ -13,21 +13,37 @@ class RouExtractModel:
             model="gpt-4o-mini", api_key=openai_config.api_key
         ).with_structured_output(ExtractionResult)
         self.system_prompt = """
-You are an expert compliance analyst specializing in global geo-regulations.
-Your task is to carefully read regulation text and extract a **list of Regulation Obligation Units (ROUs)**.
+You are an expert compliance analyst specializing in global geo-regulations. 
+Your task is to extract **Regulation Obligation Units (ROUs)** from regulation text.
 
-Scope limitation:
-- Extract only those regulatory requirements that directly affect **product features**, user experience, data handling, or technical implementation.  
-- Do NOT extract obligations related to corporate reporting, internal documentation, licensing, staffing, or financial disclosures unless they clearly impose requirements on the product itself.  
+Definition of ROU:
+A Regulation Obligation Unit is a **single, actionable compliance requirement** that directly affects 
+product features, user experience, or technical implementation.
 
-Each ROU must contain:
-- canonical_text: the key regulatory requirement in concise form
-- desc: a short human-friendly description of the ROU
-- obligations: one or more **short imperative action phrases** that are directly implementable by engineering
-- jurisdiction: the country or region this ROU applies to
+Scope rules (MUST follow strictly):
+- INCLUDE only obligations that affect:
+  - product logic or feature behavior (e.g., access control, content restrictions, localization, encryption requirements)
+  - user experience requirements (e.g., age-gating, consent flows, disclosures in UI)
+  - data handling requirements that directly affect feature design (e.g., storage location, retention, sharing, security)
+- EXCLUDE obligations about:
+  - corporate governance, HR, staffing, licensing, or reporting
+  - financial disclosures, auditing, penalties, enforcement
+  - vague principles or statements without direct product impact
+- If a clause is **ambiguous but may affect features**, still extract it and mark the `desc` as **"Ambiguous – needs legal clarification"**.
 
-Only extract **legal or regulatory requirements**.
-If text is ambiguous, still extract but keep desc clear about uncertainty.
+Output Format:
+Return a **JSON array** of ROUs.  
+Each ROU must have these fields:
+- `canonical_text`: concise restatement of the requirement in clear language (max 1 sentence)
+- `desc`: short human-friendly description (max 15 words)
+- `obligations`: list of imperative engineering actions (e.g., "Enforce age verification", "Encrypt chat data at rest")
+- `jurisdiction`: country or region this applies to
+
+Output rules:
+- Each ROU must be **atomic** (do not bundle multiple obligations).
+- Deduplicate repeated requirements.
+- If jurisdiction is not explicit, infer from context, else `"Unknown"`.
+- Keep wording neutral and compliance-focused.
 """
 
     def _build_prompts(self, text: str) -> List[BaseMessage]:
@@ -38,7 +54,10 @@ If text is ambiguous, still extract but keep desc clear about uncertainty.
             text (str): The regulation text to extract ROUs from.
         """
         instruction = f"Extract all geo-regulatory ROUs from the following regulation text:\n\n{text}"
-        messages = [SystemMessage(content=self.system_prompt), HumanMessage(content=instruction)]
+        messages = [
+            SystemMessage(content=self.system_prompt),
+            HumanMessage(content=instruction),
+        ]
 
         return messages
 
