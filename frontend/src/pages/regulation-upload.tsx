@@ -3,48 +3,53 @@ import { DropBox } from "@/components/drop-box";
 import { SubmitButton } from "@/components/button";
 import NavBar from "@/components/nav-bar";
 import { Upload } from "lucide-react";
-import axios from "axios";
-import { baseUrl } from "@/lib/constants";
+import { useRegulationUploadFlow } from "@/hooks/use-regulations";
+import { useNavigate } from "react-router-dom";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 
 const RegulationUpload: React.FC = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [title, setTitle] = useState("");
+  const { uploadRegulationWithFile, isLoading, error, reset } = useRegulationUploadFlow();
+  const navigate = useNavigate();
 
   const handleFileUpload = (files: FileList) => {
-    setUploadedFiles(Array.from(files));
+    if (files.length > 0) {
+      setUploadedFile(files[0]); // Only take the first file
+      // Auto-generate title from filename if not already set
+      if (!title && files[0].name) {
+        const nameWithoutExtension = files[0].name.replace(/\.[^/.]+$/, "");
+        setTitle(nameWithoutExtension);
+      }
+    }
   };
 
   const handleSubmit = async () => {
-    const axiosInstance = axios.create({
-      baseURL: baseUrl,
-    });
-    
-    if (uploadedFiles.length === 0) {
-      alert("Please upload at least one file before submitting.");
+    if (!uploadedFile) {
+      alert("Please upload a file before submitting.");
       return;
     }
 
-    setIsSubmitting(true);
+    if (!title.trim()) {
+      alert("Please provide a title for the regulation.");
+      return;
+    }
 
     try {
-      const formData = new FormData();
-      uploadedFiles.forEach((file) => {
-        formData.append(file.name, file);
-      });
-
-      const response = await axiosInstance.post("/regulations/upload", formData);
-
-      if (response.status === 200) {
-        alert("Files uploaded successfully!");
-        setUploadedFiles([]);
-      } else {
-        alert("Upload failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-      alert("Upload failed. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      const regulation = await uploadRegulationWithFile(uploadedFile, title.trim());
+      alert(`Regulation "${regulation.title}" uploaded successfully!`);
+      
+      // Reset form
+      setUploadedFile(null);
+      setTitle("");
+      reset();
+      
+      // Navigate back to regulations page
+      navigate("/regulations");
+    } catch (err) {
+      console.error("Upload error:", err);
+      // Error is already handled by the hook, but we can show additional UI feedback
     }
   };
 
@@ -72,29 +77,54 @@ const RegulationUpload: React.FC = () => {
           <div className="max-w-2xl mx-auto">
             <div className="bg-card rounded-lg shadow-md p-8 border border-border">
               <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
-                Upload Regulation Files
+                Upload New Regulation
               </h2>
 
               <div className="space-y-6">
+                {/* Title Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="regulation-title">Regulation Title</Label>
+                  <Input
+                    id="regulation-title"
+                    type="text"
+                    placeholder="Enter regulation title..."
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+
+                {/* File Upload */}
                 <DropBox
                   onFileUpload={handleFileUpload}
-                  acceptedFileTypes=".pdf,.txt"
-                  multiple={true}
+                  acceptedFileTypes=".pdf,.txt,.doc,.docx"
+                  multiple={false}
                   maxFileSize={50}
                 />
 
+                {/* Error Display */}
+                {error && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    <p className="font-medium">Upload failed:</p>
+                    <p className="text-sm">{error.message}</p>
+                  </div>
+                )}
+
+                {/* Submit Button */}
                 <div className="text-center">
                   <SubmitButton
-                    disabled={uploadedFiles.length === 0 || isSubmitting}
+                    disabled={!uploadedFile || !title.trim() || isLoading}
                     onClick={handleSubmit}
                   >
-                    {isSubmitting ? "Uploading..." : "Submit Files"}
+                    {isLoading ? "Uploading..." : "Upload Regulation"}
                   </SubmitButton>
                 </div>
 
-                {uploadedFiles.length > 0 && (
-                  <div className="text-sm text-muted-foreground text-center">
-                    {uploadedFiles.length} file(s) ready to upload
+                {/* File Info */}
+                {uploadedFile && (
+                  <div className="text-sm text-muted-foreground text-center bg-gray-50 p-3 rounded-lg">
+                    <p><strong>Selected file:</strong> {uploadedFile.name}</p>
+                    <p><strong>Size:</strong> {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB</p>
                   </div>
                 )}
               </div>
