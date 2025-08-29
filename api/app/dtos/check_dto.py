@@ -1,22 +1,29 @@
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
-from app.dtos.regulation_dto import RegulationDTO
+from app.database.schemas.check import Check
+from app.dtos.eval_result_dto import EvalResultDTO
 from app.database.schemas.enums.status import Status
 
 
+class CheckCreateDTO(BaseModel):
+    feature_id: int
+    status: Status = Status.PENDING
+    eval_result: EvalResultDTO | None = None
+
+    def to_db(self) -> Check:
+        return Check(feature_id=self.feature_id, status=self.status)
+
+
+class CheckUpdateDTO(BaseModel):
+    status: Status | None
+
+
 class CheckDTO(BaseModel):
-    """
-    Data Transfer Object for Check
-    """
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
-    flag: bool = Field(..., description="Indicates if the check complies with the regulation")
-    reasoning: str = Field(..., description="Detailed reasoning behind the check's outcome")
-
-    status: Status = Field(..., description="Current status of the check (e.g.,")
-    not_complying_regulations: list[RegulationDTO] = Field(
-        ..., description="List of regulations that the check does not comply with"
-    )
-    created_at: datetime = Field(..., description="The creation date of the check")
-    updated_at: datetime = Field(..., description="The last update date of the check")
+    status: Status
+    eval_result: EvalResultDTO | None
+    created_at: datetime
+    updated_at: datetime

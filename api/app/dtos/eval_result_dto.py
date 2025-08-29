@@ -1,15 +1,14 @@
-from datetime import datetime
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.database.schemas.enums.flag_type import FlagType
 
 
-from typing import List, Literal
-from pydantic import BaseModel, Field
-from datetime import datetime
+class EvalResultDTO(BaseModel):
 
+    model_config = ConfigDict(from_attributes=True)
 
-class EvalResult(BaseModel):
-    flag: Literal["yes", "no", "unknown"] = Field(
+    flag: FlagType = Field(
         ...,
         description="Whether the feature requires geo-specific compliance logic. "
         "'yes' = requires geo-specific logic; 'no' = does not; 'unknown' = insufficient evidence.",
@@ -32,10 +31,3 @@ class EvalResult(BaseModel):
         default_factory=list,
         description="Explicit items or clarifications required to resolve uncertainty.",
     )
-
-
-class Check(EvalResult):
-    id: int
-    # status: CheckStatus
-    created_at: datetime
-    updated_at: datetime

@@ -14,7 +14,6 @@ from typing import List
 if TYPE_CHECKING:
     from app.database.schemas.rou import RegulatoryObligationUnit
     from app.database.schemas.file_object import FileObject
-    from app.database.schemas.check_regulation import CheckRegulation
 
 
 class Regulation(Base, SerialIdMixin, TimestampMixin):
@@ -29,7 +28,4 @@ class Regulation(Base, SerialIdMixin, TimestampMixin):
     file_object: Mapped["FileObject"] = relationship("FileObject", back_populates="regulation")
     rous: Mapped[List["RegulatoryObligationUnit"]] = relationship(
         "RegulatoryObligationUnit", back_populates="source"
-    )
-    check_regulations: Mapped[List["CheckRegulation"]] = relationship(
-        "CheckRegulation", back_populates="regulation"
     )

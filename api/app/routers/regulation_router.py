@@ -3,7 +3,6 @@ from fastapi import APIRouter, BackgroundTasks, UploadFile
 from app.dtos.feature_dto import FeatureDTO
 from app.dtos.regulation_dto import RegulationCreateDTO, RegulationDTO
 from app.services.regulation.rou_service import RouServiceDep, SupabaseStorageServiceDep
-from app.services.regulation.feat_eval.feat_eval_agent import FeatEvalAgentDep
 from app.services.regulation.regulation_service import RegulationServiceDep
 
 # Create the router
@@ -47,11 +46,3 @@ async def get_regulation(regulation_id: int, regulation_service: RegulationServi
     Get a regulation by ID.
     """
     return await regulation_service.get_regulation_by_id(regulation_id)
-
-
-@router.post("/test_evaluate")
-async def evaluate_feature(feature: FeatureDTO, eval_agent: FeatEvalAgentDep):
-    """
-    Evaluate a feature for geo-specific compliance needs.
-    """
-    return await eval_agent.evaluate(feature)
