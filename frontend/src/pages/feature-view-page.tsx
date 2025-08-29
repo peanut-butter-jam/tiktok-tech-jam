@@ -1,85 +1,33 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Settings, ArrowLeft, FileText } from "lucide-react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { Settings, ArrowLeft } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
-
-// Define the Feature type
-interface Feature {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  lastChecked: string | null;
-  category: string;
-  status: string;
-  reasoning: string;
-  relatedDocuments: { name: string; size: number }[];
-}
+import type { Feature } from "@/types/feature";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
 
 const FeatureView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [feature, setFeature] = useState<Feature | null>(null);
-  const [facts, setFacts] = useState<string[]>([]);
-
-  // Dummy data
-  const dummyFeatures: Feature[] = [
-    {
-      id: "1",
-      name: "Example Feature 1",
-      description: "This is the first example feature description.",
-      createdAt: "2023-08-01",
-      lastChecked: "2023-09-01",
-      category: "User Interface",
-      status: "Compliant",
-      reasoning:
-        "This feature adheres to all current accessibility guidelines and privacy regulations. It implements proper data handling and user consent mechanisms.",
-      relatedDocuments: [
-        { name: "Feature_Spec_1.pdf", size: 2048 },
-        { name: "Design_Doc_1.docx", size: 1024 },
-      ],
-    },
-    {
-      id: "2",
-      name: "Example Feature 2",
-      description: "This is the second example feature description.",
-      createdAt: "2023-07-15",
-      lastChecked: "2023-08-20",
-      category: "Backend",
-      status: "Non-Compliant",
-      reasoning:
-        "This feature requires updates to meet the latest data retention policies. The current implementation stores user data longer than permitted under GDPR.",
-      relatedDocuments: [],
-    },
-  ];
-
-  const dummyFacts: string[] = [
-    "This feature was implemented to improve user experience.",
-    "It integrates with the existing authentication system.",
-    "Performance testing shows 25% improvement in load times.",
-  ];
 
   const loadFeature = () => {
-    // Find the feature with the matching `id`
-    const featureData = dummyFeatures.find((feature) => feature.id === id);
-
-    // Set the feature data (or null if not found)
-    setFeature(featureData || null);
-
-    // Set dummy facts for now
-    setFacts(dummyFacts);
+    // First, try to get feature data from navigation state
+    const passedFeature = location.state?.feature;
+    setFeature(passedFeature);
   };
 
   useEffect(() => {
     loadFeature();
   }, [id]);
-
-  // Handle download logic
-  const handleDownload = (documentName: string) => {
-    console.log(`Downloading file: ${documentName}`);
-    // Add your download logic here (e.g., fetch the file from the server)
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -138,19 +86,19 @@ const FeatureView = () => {
 
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-foreground">
-                  Last Checked
+                  Updated At
                 </h3>
                 <p className="text-foreground bg-muted p-4 rounded-lg">
-                  {feature?.lastChecked || "Not yet analyzed"}
+                  {feature?.updatedAt || "Not yet analyzed"}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-foreground">
-                  Category
+                  Flag
                 </h3>
                 <p className="text-foreground bg-muted p-4 rounded-lg">
-                  {feature?.category || "Not specified"}
+                  {feature?.flag ? "Yes" : "No"}
                 </p>
               </div>
 
@@ -180,58 +128,28 @@ const FeatureView = () => {
                 {feature?.reasoning || "No reasoning provided"}
               </div>
             </div>
-          </div>
 
-          {/* Related Documents */}
-          <div className="border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-4 text-foreground">
-              Related Documents
-            </h3>
-            {feature?.relatedDocuments &&
-            feature.relatedDocuments.length > 0 ? (
-              <div className="space-y-2">
-                {feature.relatedDocuments.map((doc, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-2 p-3 bg-muted rounded-lg"
-                  >
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDownload(doc.name);
-                      }}
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      {doc.name}
-                    </a>
-                    <span className="text-xs text-muted-foreground">
-                      {(doc.size / 1024).toFixed(1)} KB
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No related documents uploaded</p>
-              </div>
-            )}
-          </div>
-
-          {/* Facts About the Feature */}
-          <div className="border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-4 text-foreground">
-              Facts About the Feature
-            </h3>
-            <ul className="list-disc list-inside space-y-2">
-              {facts.map((fact, index) => (
-                <li key={index} className="text-sm text-foreground">
-                  {fact}
-                </li>
-              ))}
-            </ul>
+            <div>
+              <h3 className="text-lg font-semibold mb-2 text-foreground">
+                Regulations Violated
+              </h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Description</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {feature?.regulationsViolated?.map((regulation) => (
+                    <TableRow key={regulation.id}>
+                      <TableCell>{regulation.name}</TableCell>
+                      <TableCell>{regulation.description}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </div>
       </div>
