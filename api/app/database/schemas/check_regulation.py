@@ -11,11 +11,7 @@ class CheckRegulation(Base, SerialIdMixin, TimestampMixin):
     __tablename__ = "checks_regulations"
 
     check_id: Mapped[int] = mapped_column(ForeignKey("checks.id"), nullable=False)
-    regulation_id: Mapped[int] = mapped_column(
-        ForeignKey("regulations.id"), nullable=False
-    )
+    regulation_id: Mapped[int] = mapped_column(ForeignKey("regulations.id"), nullable=False)
 
-    check: Mapped["Check"] = relationship("CHECK", back_populates="check_regulations")
-    regulation: Mapped["Regulation"] = relationship(
-        "Regulation", back_populates="check_regulations"
-    )
+    check: Mapped["Check"] = relationship("Check", back_populates="check_regulations")
+    regulation: Mapped["Regulation"] = relationship("Regulation", back_populates="check_regulations")

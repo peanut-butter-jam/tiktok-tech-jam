@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
-from check_dto import CheckDTO
+
+from app.dtos.check_dto import CheckDTO
 
 
 class FeatureDTO(BaseModel):
@@ -8,7 +9,7 @@ class FeatureDTO(BaseModel):
     Data Transfer Object for Feature
     """
 
-    mdel_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     title: str = Field(...)

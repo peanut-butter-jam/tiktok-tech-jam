@@ -25,14 +25,11 @@ class Regulation(Base, SerialIdMixin, TimestampMixin):
     file_object_id: Mapped[UUID] = mapped_column(
         ForeignKey("file_objects.id"), nullable=False, unique=True
     )
-    file_object: Mapped["FileObject"] = relationship(
-        "FileObject", back_populates="regulation"
-    )
 
-    rous: Mapped["RegulatoryObligationUnit"] = relationship(
+    file_object: Mapped["FileObject"] = relationship("FileObject", back_populates="regulation")
+    rous: Mapped[List["RegulatoryObligationUnit"]] = relationship(
         "RegulatoryObligationUnit", back_populates="source"
     )
-
     check_regulations: Mapped[List["CheckRegulation"]] = relationship(
         "CheckRegulation", back_populates="regulation"
     )

@@ -1,24 +1,39 @@
-from fastapi import APIRouter, UploadFile
-from app.services.regulation.pdf_reader import read_pdf
-from app.services.regulation.rou_extraction.map_reduce_rou_extractor import MapReduceRouExtractorDep
-from app.dtos.feature_dto import FeatureDto
+from fastapi import APIRouter, BackgroundTasks, UploadFile
+
+from app.dtos.feature_dto import FeatureDTO
+from app.dtos.regulation_dto import RegulationCreateDTO, RegulationDTO
+from app.services.regulation.rou_service import RouServiceDep, SupabaseStorageServiceDep
 from app.services.regulation.feat_eval.feat_eval_agent import FeatEvalAgentDep
 from app.services.regulation.regulation_service import RegulationServiceDep
-from app.dtos.regulation_dto import CreateRegulationDTO
 
 # Create the router
 router = APIRouter(prefix="/regulations", tags=["Regulations"])
 
 
-@router.post("/")
-async def upload_regulation(regulation: CreateRegulationDTO, regulation_service: RegulationServiceDep):
+@router.post("/file")
+async def upload_regulation_file(file: UploadFile, supabase_storage_service: SupabaseStorageServiceDep):
+    return await supabase_storage_service.upload_file("regulations", file)
+
+
+@router.post("/", response_model=RegulationDTO)
+async def upload_regulation(
+    regulation: RegulationCreateDTO,
+    regulation_service: RegulationServiceDep,
+    background_task: BackgroundTasks,
+    rou_service: RouServiceDep,
+):
     """
     Create a new regulation.
     """
-    return await regulation_service.upload_regulation(regulation)
+    uploaded_regulation = await regulation_service.upload_regulation(regulation)
+
+    # Non-blocking rous extraction task
+    background_task.add_task(rou_service.extract_from_regulation, regulation=uploaded_regulation)
+
+    return uploaded_regulation
 
 
-@router.get("/")
+@router.get("/", response_model=list[RegulationDTO])
 async def get_regulations(regulation_service: RegulationServiceDep):
     """
     Get all regulations.
@@ -26,7 +41,7 @@ async def get_regulations(regulation_service: RegulationServiceDep):
     return await regulation_service.get_all_regulations()
 
 
-@router.get("/{regulation_id}")
+@router.get("/{regulation_id}", response_model=RegulationDTO)
 async def get_regulation(regulation_id: int, regulation_service: RegulationServiceDep):
     """
     Get a regulation by ID.
@@ -35,24 +50,8 @@ async def get_regulation(regulation_id: int, regulation_service: RegulationServi
 
 
 @router.post("/test_evaluate")
-async def evaluate_feature(feature: FeatureDto, eval_agent: FeatEvalAgentDep):
+async def evaluate_feature(feature: FeatureDTO, eval_agent: FeatEvalAgentDep):
     """
     Evaluate a feature for geo-specific compliance needs.
     """
     return await eval_agent.evaluate(feature)
-
-
-@router.post("/test_upload_regulation")
-async def test_upload_regulation(
-    regulation: UploadFile,
-    map_reduce_rou_extractor: MapReduceRouExtractorDep,
-    regulation_service: RegulationServiceDep,
-):
-    """
-    Test the map-reduce functionality.
-    """
-    text = read_pdf(regulation)
-
-    extracted_rous = await map_reduce_rou_extractor.extract(text)
-
-    return await regulation_service.upload_regulation(extracted_rous)

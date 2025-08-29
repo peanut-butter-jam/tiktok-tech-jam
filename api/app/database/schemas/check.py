@@ -18,14 +18,10 @@ class Check(Base, SerialIdMixin, TimestampMixin):
 
     flag: Mapped[bool] = mapped_column(nullable=False)
     reasoning: Mapped[str] = mapped_column(Text)
-    status: Mapped[Status] = mapped_column(
-        Enum(Status), nullable=False, default=Status.PENDING
-    )
-    feature_id: Mapped[int] = mapped_column(
-        ForeignKey("features.id"), nullable=False, unique=True
-    )
+    status: Mapped[Status] = mapped_column(Enum(Status), nullable=False, default=Status.PENDING)
+    feature_id: Mapped[int] = mapped_column(ForeignKey("features.id"), nullable=False, unique=True)
     feature: Mapped["Feature"] = relationship("Feature", back_populates="checks")
 
-    checks_regulations: Mapped[List["CheckRegulation"]] = relationship(
+    check_regulations: Mapped[List["CheckRegulation"]] = relationship(
         "CheckRegulation", back_populates="check"
     )

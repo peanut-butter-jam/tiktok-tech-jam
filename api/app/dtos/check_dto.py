@@ -1,7 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
+
+from app.dtos.regulation_dto import RegulationDTO
 from app.database.schemas.enums.status import Status
-from regulation_dto import RegulationDTO
 
 
 class CheckDTO(BaseModel):
@@ -10,12 +11,8 @@ class CheckDTO(BaseModel):
     """
 
     id: int
-    flag: bool = Field(
-        ..., description="Indicates if the check complies with the regulation"
-    )
-    reasoning: str = Field(
-        ..., description="Detailed reasoning behind the check's outcome"
-    )
+    flag: bool = Field(..., description="Indicates if the check complies with the regulation")
+    reasoning: str = Field(..., description="Detailed reasoning behind the check's outcome")
 
     status: Status = Field(..., description="Current status of the check (e.g.,")
     not_complying_regulations: list[RegulationDTO] = Field(

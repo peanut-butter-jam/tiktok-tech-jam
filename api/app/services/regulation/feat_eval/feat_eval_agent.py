@@ -1,16 +1,15 @@
 from typing import Annotated
 from fastapi import Depends
-from langchain_core.messages import SystemMessage
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage
 
+from app.dtos.feature_dto import FeatureDTO
 from app.services.regulation.feat_eval.query_rous_tool import QueryRousTool
 from app.services.regulation.regulation_service import RegulationServiceDep
 from app.dtos.check import EvalResult
 from app.config.app_config import FeatEvalConfigDep, OpenAIConfigDep
-from app.dtos.feature_dto import FeatureDto
 
 user_prompt_template = PromptTemplate.from_template(
     """
@@ -38,12 +37,12 @@ class FeatEvalAgent:
         )
         self.system_prompt = feat_eval_config.system_prompt
 
-    async def evaluate(self, feature: FeatureDto):
+    async def evaluate(self, feature: FeatureDTO):
         messages = [
             self.system_prompt,
             HumanMessage(
                 content=user_prompt_template.format_prompt(
-                    feature_name=feature.name, feature_desc=feature.desc
+                    feature_name=feature.title, feature_desc=feature.description
                 ).to_string()
             ),
         ]

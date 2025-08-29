@@ -1,11 +1,20 @@
-from datetime import date, datetime
-from typing import Optional
+from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, Field, ConfigDict
-from rou_dto import RouDto
+from pydantic import BaseModel, ConfigDict
+
+from app.dtos.rou_dto import RouDto
 
 
-class RegulationDTO(BaseModel):
+class RegulationCreateDTO(BaseModel):
+    """
+    DTO for creating a new Regulation
+    """
+
+    title: str
+    file_object_id: UUID
+
+
+class RegulationDTO(RegulationCreateDTO):
     """
     Data Transfer Object for Regulation
     """
@@ -13,21 +22,6 @@ class RegulationDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    title: str = Field(...)
-    file_object_id: UUID | None = Field(...)
-
-
-class CreateRegulationDTO(RegulationDTO):
-    """
-    DTO for creating a new Regulation
-    """
-
-
-class GetRegulationDTO(RegulationDTO):
-    """
-    DTO for retrieving a Regulation
-    """
-
-    created_at: datetime = Field(...)
-    updated_at: datetime = Field(...)
-    rous: list[RouDto] | None = Field(...)
+    created_at: datetime
+    updated_at: datetime
+    rous: list[RouDto] | None

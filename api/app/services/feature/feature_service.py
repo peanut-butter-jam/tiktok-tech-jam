@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import Depends
 from typing_extensions import Annotated
+
 from app.database.schemas.feature import Feature
 from app.database.repositories.check_repository import CheckRepositoryDep
 from app.dtos.feature_dto import GetFeatureDTO, CreateFeatureDTO
@@ -49,11 +50,7 @@ class FeatureService:
             description=entry.description,
             created_at=entry.created_at,
             updated_at=entry.updated_at,
-            checks=(
-                [CheckDTO.model_validate(check) for check in entry.checks]
-                if entry.checks
-                else []
-            ),
+            checks=([CheckDTO.model_validate(check) for check in entry.checks] if entry.checks else []),
         )
 
         return entry_dto
