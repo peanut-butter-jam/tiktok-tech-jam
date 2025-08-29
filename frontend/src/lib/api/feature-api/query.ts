@@ -12,6 +12,7 @@ export const useGetFeatureByIdQuery = (id: number) => {
   return useQuery({
     queryKey: ["feature", id],
     queryFn: () => getFeatureById(id),
+    refetchInterval: 60000,
   });
 };
 

@@ -27,7 +27,7 @@ class MapInputState(BaseModel):
     chunk: str
 
 
-semaphore = asyncio.Semaphore(50)
+semaphore = asyncio.Semaphore(20)
 
 
 class MapReduceRouExtractor:

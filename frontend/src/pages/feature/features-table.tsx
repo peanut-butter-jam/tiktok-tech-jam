@@ -41,17 +41,17 @@ const FeaturesTable = ({
           <TableRow key={feature.id} onClick={() => onSelectFeature(feature)}>
             <TableCell>{feature.title}</TableCell>
             <TableCell>
-              {feature.latest_check?.eval_result?.flag ? (
-                <FlagBadge flag={feature.latest_check.eval_result.flag} />
-              ) : (
-                "No Result"
-              )}
-            </TableCell>
-            <TableCell>
               {feature.latest_check?.status ? (
                 <StatusBadge status={feature.latest_check.status} />
               ) : (
                 "No Check"
+              )}
+            </TableCell>
+            <TableCell>
+              {feature.latest_check?.eval_result?.flag ? (
+                <FlagBadge flag={feature.latest_check.eval_result.flag} />
+              ) : (
+                "No Result"
               )}
             </TableCell>
             <TableCell>
