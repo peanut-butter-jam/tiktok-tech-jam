@@ -11,7 +11,7 @@ from app.services.feature.feat_eval.query_terminologies_tool import (
     QueryTerminologiesTool,
 )
 from app.dtos.feature_dto import FeatureDTO
-from app.dtos.term_mapping_result import TermMappingResultDTO
+from app.dtos.term_mapping_result import Mapping, TermMappingResultDTO
 from app.config.app_config import OpenAIConfigDep
 
 
@@ -73,12 +73,10 @@ class TerminologyMappingAgent:
         self.agent = create_react_agent(
             model=model,
             response_format=TermMappingResultDTO,
-            tools=[
-                QueryTerminologiesTool(terminology_repository=terminology_repository)
-            ],
+            tools=[QueryTerminologiesTool(terminology_repository=terminology_repository)],
         )
 
-    async def extract_terminology_mappings(self, feature: FeatureDTO) -> Dict[str, str]:
+    async def extract_terminology_mappings(self, feature: FeatureDTO) -> List[Mapping]:
         """Extract terminology mappings from a feature"""
         messages = [
             system_prompt,
@@ -99,6 +97,4 @@ class TerminologyMappingAgent:
         return result.mappings
 
 
-TerminologyMappingAgentDep = Annotated[
-    TerminologyMappingAgent, Depends(TerminologyMappingAgent)
-]
+TerminologyMappingAgentDep = Annotated[TerminologyMappingAgent, Depends(TerminologyMappingAgent)]

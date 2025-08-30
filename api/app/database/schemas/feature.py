@@ -1,5 +1,6 @@
 from sqlalchemy import Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column
+from app.dtos.term_mapping_result import Mapping
 from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
@@ -15,6 +16,6 @@ class Feature(Base, SerialIdMixin, TimestampMixin):
 
     title: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    terminologies: Mapped[Dict[str, str] | None] = mapped_column(JSON, nullable=True)
+    terminologies: Mapped[List[Mapping] | None] = mapped_column(JSON, nullable=True)
 
     checks: Mapped[List["Check"]] = relationship("Check", back_populates="feature")
