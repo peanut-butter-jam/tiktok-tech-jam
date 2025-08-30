@@ -133,6 +133,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/features/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import Features From Csv
+         * @description Import features from a CSV file.
+         */
+        post: operations["import_features_from_csv_features_csv_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/features/{feature_id}/checks": {
         parameters: {
             query?: never;
@@ -157,6 +177,14 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_import_features_from_csv_features_csv_post */
+        Body_import_features_from_csv_features_csv_post: {
+            /**
+             * Csv File
+             * Format: binary
+             */
+            csv_file: string;
+        };
         /** Body_upload_regulation_file_regulations_file_post */
         Body_upload_regulation_file_regulations_file_post: {
             /**
@@ -646,6 +674,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_features_from_csv_features_csv_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_features_from_csv_features_csv_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeatureDTOWithCheck"][];
+                };
             };
             /** @description Validation Error */
             422: {

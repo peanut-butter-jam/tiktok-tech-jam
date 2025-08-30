@@ -57,14 +57,14 @@ const FeaturesTable = ({
                 {feature.latest_check?.status ? (
                   <StatusBadge status={feature.latest_check.status} />
                 ) : (
-                  "No Check"
+                  "-"
                 )}
               </TableCell>
               <TableCell>
                 {feature.latest_check?.eval_result?.flag ? (
                   <FlagBadge flag={feature.latest_check.eval_result.flag} />
                 ) : (
-                  "No Result"
+                  "-"
                 )}
               </TableCell>
               <TableCell>
@@ -76,7 +76,7 @@ const FeaturesTable = ({
                     }
                   />
                 ) : (
-                  "No Result"
+                  "-"
                 )}
               </TableCell>
               <TableCell>{feature.created_at}</TableCell>

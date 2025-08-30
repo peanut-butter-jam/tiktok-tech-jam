@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import BackgroundTasks, Depends
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -13,7 +13,7 @@ from app.database.repositories.eval_result_repository import EvalResultRepositor
 from app.dtos.eval_result_dto import EvalResultDTO
 from app.services.feature.feat_eval.query_rous_tool import QueryRousTool
 from app.dtos.check_dto import CheckCreateDTO, CheckDTO, CheckUpdateDTO
-from app.dtos.feature_dto import FeatureDTO
+from app.dtos.feature_dto import FeatureDTO, FeatureDTOWithCheck
 from app.services.regulation.regulation_service import RegulationServiceDep
 from app.config.app_config import FeatEvalConfigDep, OpenAIConfigDep
 
@@ -50,29 +50,35 @@ class FeatEvalAgent:
         self.background_task = background_task
 
     async def invoke(self, feature: FeatureDTO) -> CheckDTO:
-        check = await self._init_check(feature.id)
+        check = (await self._init_checks([feature.id]))[0]
 
-        async def run_bg_task():
-            eval_result = await self._eval_feature(feature)
-            await self._update_check_with_result(check.id, eval_result)
-
-        self.background_task.add_task(run_bg_task)
+        self.background_task.add_task(self._run_bg_task, feature, check)
 
         return check
 
-    async def _init_check(self, feature_id: int) -> CheckDTO:
-        new_check = CheckCreateDTO(feature_id=feature_id)
+    async def invoke_multiple(self, features: List[FeatureDTO]) -> List[CheckDTO]:
+        checks = await self._init_checks([feature.id for feature in features])
 
-        inserted_check = await self.check_repository.create(new_check.to_db())
+        for feature, check in zip(features, checks):
+            self.background_task.add_task(self._run_bg_task, feature, check)
 
-        check_with_empty_result = await self.check_repository.get_one_by_id(
-            inserted_check.id, options=[selectinload(Check.eval_result)]
+        return checks
+
+    async def _run_bg_task(self, feature: FeatureDTO, check: CheckDTO) -> None:
+        eval_result = await self._eval_feature(feature)
+        await self._update_check_with_result(check.id, eval_result)
+
+    async def _init_checks(self, feature_ids: List[int]) -> List[CheckDTO]:
+        new_checks = [CheckCreateDTO(feature_id=feature_id) for feature_id in feature_ids]
+
+        inserted_checks = await self.check_repository.create_many(
+            [check.to_db() for check in new_checks]
+        )
+        checks_with_result = await self.check_repository.get_many_by_ids(
+            [check.id for check in inserted_checks], options=[selectinload(Check.eval_result)]
         )
 
-        if not check_with_empty_result:
-            raise LookupError("Check not found")
-
-        return CheckDTO.model_validate(check_with_empty_result)
+        return [CheckDTO.model_validate(check) for check in checks_with_result]
 
     async def _eval_feature(self, feature: FeatureDTO) -> EvalResultDTO:
         messages = [

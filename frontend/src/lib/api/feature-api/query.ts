@@ -4,6 +4,7 @@ import {
   deleteFeatureById,
   getAllFeatures,
   getFeatureById,
+  importFeaturesFromCsv,
   triggerFeatureCheckById,
 } from "./request";
 import { queryClient } from "@/contexts/react-query/react-query-provider";
@@ -31,6 +32,19 @@ export const useCreateFeatureMutation = () => {
     },
     onError: (error) => {
       toast.error(`Error uploading feature: ${error.message}`);
+    },
+  });
+};
+
+export const useImportFeaturesFromCsvMutation = () => {
+  return useMutation({
+    mutationFn: importFeaturesFromCsv,
+    onSuccess: (data: FeatureDTOWithCheck[]) => {
+      queryClient.invalidateQueries({ queryKey: ["features"] });
+      toast.success(`Features imported successfully!`);
+    },
+    onError: (error) => {
+      toast.error(`Error importing features: ${error.message}`);
     },
   });
 };

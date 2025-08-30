@@ -2,6 +2,7 @@ from datetime import datetime
 from functools import cached_property
 from pydantic import BaseModel, Field, ConfigDict, computed_field
 
+from app.database.schemas.feature import Feature
 from app.dtos.check_dto import CheckDTO
 
 
@@ -12,6 +13,12 @@ class FeatureCreateDTO(BaseModel):
 
     title: str = Field(..., description="The name of the feature")
     description: str = Field(..., description="A brief description of the feature")
+
+    def to_db(self) -> Feature:
+        return Feature(
+            title=self.title,
+            description=self.description,
+        )
 
 
 class FeatureDTO(FeatureCreateDTO):

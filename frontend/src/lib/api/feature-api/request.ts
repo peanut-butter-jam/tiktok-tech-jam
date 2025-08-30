@@ -19,6 +19,15 @@ export const createFeature = async (data: FeatureCreateDTO) => {
   return await apiClient.post<FeatureDTOWithCheck>(featureBaseUrl, data);
 };
 
+export const importFeaturesFromCsv = async (file: File) => {
+  const formData = new FormData();
+  formData.append("csv_file", file);
+  return await apiClient.post<FeatureDTOWithCheck[]>(
+    `${featureBaseUrl}/csv`,
+    formData
+  );
+};
+
 export const deleteFeatureById = async (id: number) => {
   return await apiClient.delete<void>(`${featureBaseUrl}/${id}`);
 };
