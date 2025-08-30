@@ -7,6 +7,7 @@ import {
   useCreateFeatureMutation,
   useDeleteFeatureByIdMutation,
   useGetAllFeaturesQuery,
+  useImportFeaturesFromCsvMutation,
   useTriggerFeatureCheckMutation,
   useUpdateFeatureMutation,
 } from "@/lib/api/feature-api/query";
@@ -27,6 +28,8 @@ const FeaturesPage = () => {
   const { mutateAsync: updateFeature } = useUpdateFeatureMutation();
   const { mutateAsync: deleteFeatureById } = useDeleteFeatureByIdMutation();
   const { mutateAsync: triggerFeatureCheck } = useTriggerFeatureCheckMutation();
+  const { mutateAsync: importFeaturesFromCsv } =
+    useImportFeaturesFromCsvMutation();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,6 +63,16 @@ const FeaturesPage = () => {
   const handleCreateFeature = async (feature: FeatureCreateDTO) => {
     createFeature(feature);
     setOpenCreateFeatureDialog(false);
+  };
+
+  const handleBulkUpload = async (file: File) => {
+    try {
+      console.log(file);
+      await importFeaturesFromCsv(file);
+      setOpenCreateFeatureDialog(false);
+    } catch (error) {
+      console.error("Failed to import features:", error);
+    }
   };
 
   const handleUpdateFeature = async (
@@ -149,6 +162,7 @@ const FeaturesPage = () => {
         open={openCreateFeatureDialog}
         onOpenChange={setOpenCreateFeatureDialog}
         onSubmit={handleCreateFeature}
+        onBulkSubmit={handleBulkUpload}
       />
     </>
   );
