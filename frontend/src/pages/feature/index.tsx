@@ -7,6 +7,7 @@ import {
   useCreateFeatureMutation,
   useDeleteFeatureByIdMutation,
   useGetAllFeaturesQuery,
+  useTriggerFeatureCheckMutation,
   useUpdateFeatureMutation,
 } from "@/lib/api/feature-api/query";
 import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
@@ -25,6 +26,7 @@ const FeaturesPage = () => {
   const { mutateAsync: createFeature } = useCreateFeatureMutation();
   const { mutateAsync: updateFeature } = useUpdateFeatureMutation();
   const { mutateAsync: deleteFeatureById } = useDeleteFeatureByIdMutation();
+  const { mutateAsync: triggerFeatureCheck } = useTriggerFeatureCheckMutation();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,9 +49,12 @@ const FeaturesPage = () => {
     setOpenFeatureDialog(true);
   };
 
-  // Dummy logic for handleDelete
   const handleDelete = (feature: FeatureDTOWithCheck) => {
     deleteFeatureById(feature.id);
+  };
+
+  const handleTriggerFeatureCheck = (feature: FeatureDTOWithCheck) => {
+    triggerFeatureCheck(feature.id);
   };
 
   const handleCreateFeature = async (feature: FeatureCreateDTO) => {
@@ -114,6 +119,7 @@ const FeaturesPage = () => {
             features={paginatedData}
             onSelectFeature={handleSelectFeature}
             onDeleteFeature={handleDelete}
+            onTriggerFeatureCheck={handleTriggerFeatureCheck}
             isLoading={isLoading}
           />
 
@@ -136,6 +142,7 @@ const FeaturesPage = () => {
         }}
         feature={selectedFeature}
         onUpdateFeature={handleUpdateFeature}
+        onTriggerFeatureCheck={handleTriggerFeatureCheck}
       />
 
       <CreateFeatureDialog
