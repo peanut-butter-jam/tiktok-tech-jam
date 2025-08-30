@@ -1,129 +1,6 @@
-# Regulation Compliance System
+# Regulo
 
-This repository is a boilerplate codebase for a full-stack application using the following technologies:
-
--   React: A JavaScript library for building user interfaces.
--   Tailwind CSS: For styling the frontend.
--   FastAPI: A modern, fast (high-performance) web framework for building APIs with Python.
--   Pytest: For testing the FastAPI backend.
--   PostgreSQL: A powerful, open-source object-relational database system.
--   SQLAlchemy: For database ORM (Object Relational Mapping) in Python.
--   Alembic: For database migrations.
--   ESLint & Prettier: For code linting and formatting.
--   Docker: For containerizing the application and managing dependencies.
-
----
-
-## Architecture
-
-### Core Components
-
-1. **Regulation Processing Engine** - Processes regulatory documents using advanced RAG techniques
-2. **Feature Checking Pipeline** - Evaluates uploaded features against processed regulations
-3. **Term Mapper Agent** - Extracts and contextualizes special terminology
-4. **Evaluation Agent** - Performs compliance assessment against regulatory database
-5. **Learning Agent** - Incorporates user feedback for continuous improvement
-
----
-
-## How It Works
-
-### 1. Regulation Processing
-
-The system processes regulatory documents through a sophisticated pipeline:
-
-```
-Regulatory Document → Chunking → Map-Reduce Extraction → Embedding Storage
-```
-
-**Process Details:**
-
--   **Chunking**: Documents are split into overlapping chunks to preserve boundary context
--   **Map Task**: Each chunk is processed in parallel to extract regulatory facts
--   **Reduce Task**: Duplicate facts are identified and removed
--   **Storage**: Clean, unique facts are stored as embeddings for efficient retrieval
-
-### 2. Feature Checking Pipeline
-
-When a feature is uploaded, it triggers an automated checking process:
-
-```
-Feature Upload → Term Mapping → Regulation Query → Evaluation → Results
-```
-
-**Step-by-Step Process:**
-
-#### Term Mapper Agent
-
--   Extracts special terminology from feature descriptions
--   Queries terminology database for context-appropriate explanations
--   Enriches feature understanding with regulatory context
-
-#### Evaluation Agent
-
--   Searches regulatory database for relevant compliance requirements
--   Identifies potential violations or conflicts
--   Performs comprehensive compliance assessment
-
-### 3. Results and Actions
-
-The system provides structured output for each evaluation:
-
-#### Result Format
-
-```json
-{
-    "flag": "yes|no|unknown",
-    "reasoning": "Detailed explanation of the assessment",
-    "suggested_action": "Recommended next steps"
-}
-```
-
-#### Result Types
-
-**Compliant (`yes`)**
-
--   Feature meets all identified regulatory requirements
--   No violations detected
--   Ready for implementation
-
-**Non-Compliant (`no`)**
-
--   Clear regulatory violations identified
--   Specific requirements cited
--   Modification recommendations provided
-
-**Unclear (`unknown`)**
-
--   Insufficient information for definitive assessment
--   Additional context required
--   User input needed for re-evaluation
-
----
-
-## User Interaction
-
-### Handling Uncertain Results
-
-When the system returns `unknown`:
-
-1. **Review Suggestions**: Check recommended areas for clarification
-2. **Update Description**: Provide additional feature details
-3. **Clarify Terminology**: Refine technical terms used
-4. **Re-run Check**: Click the rerun button for fresh evaluation
-
-### Feedback and Learning
-
-If you disagree with a result:
-
-1. **Provide Feedback**: Submit your assessment and reasoning
-2. **Learning Integration**: The system's learning agent processes your input
-3. **Re-evaluation**: Run a new check with updated model understanding
-4. **Continuous Improvement**: Your feedback helps improve future assessments
-
----
-
-# Setup Guide
+## Setup Guide
 
 This project consists of three main components that need to be set up to run the application:
 
@@ -249,6 +126,8 @@ Tip: Follow the setup order carefully (Database → Backend → Frontend) to avo
 -   Make sure to add your own OpenAI API key in the .env file to enable AI-related features.
 -   All core services (backend, frontend, database) must be running to fully test the system.
 
+---
+
 ## User Workflow
 
 ### 1. Upload Regulation
@@ -280,3 +159,115 @@ Tip: Follow the setup order carefully (Database → Backend → Frontend) to avo
 5. Review the feature check results.
     - If flagged as **unknown**, provide additional context.
     - If you **disagree with the system’s flagging**, reconcile the result.
+
+---
+
+## Architecture
+
+### Core Components
+
+1. **Regulation Processing Engine** - Processes regulatory documents using advanced RAG techniques
+2. **Feature Checking Pipeline** - Evaluates uploaded features against processed regulations
+3. **Term Mapper Agent** - Extracts and contextualizes special terminology
+4. **Evaluation Agent** - Performs compliance assessment against regulatory database
+5. **Learning Agent** - Incorporates user feedback for continuous improvement
+
+---
+
+## How It Works
+
+### 1. Regulation Processing
+
+The system processes regulatory documents through a sophisticated pipeline:
+
+```
+Regulatory Document → Chunking → Map-Reduce Extraction → Embedding Storage
+```
+
+**Process Details:**
+
+-   **Chunking**: Documents are split into overlapping chunks to preserve boundary context
+-   **Map Task**: Each chunk is processed in parallel to extract regulatory facts
+-   **Reduce Task**: Duplicate facts are identified and removed
+-   **Storage**: Clean, unique facts are stored as embeddings for efficient retrieval
+
+### 2. Feature Checking Pipeline
+
+When a feature is uploaded, it triggers an automated checking process:
+
+```
+Feature Upload → Term Mapping → Regulation Query → Evaluation → Results
+```
+
+**Step-by-Step Process:**
+
+#### Term Mapper Agent
+
+-   Extracts special terminology from feature descriptions
+-   Queries terminology database for context-appropriate explanations
+-   Enriches feature understanding with regulatory context
+
+#### Evaluation Agent
+
+-   Searches regulatory database for relevant compliance requirements
+-   Identifies potential violations or conflicts
+-   Performs comprehensive compliance assessment
+
+### 3. Results and Actions
+
+The system provides structured output for each evaluation:
+
+#### Result Format
+
+```json
+{
+    "flag": "yes|no|unknown",
+    "reasoning": "Detailed explanation of the assessment",
+    "suggested_action": "Recommended next steps"
+}
+```
+
+#### Result Types
+
+**Compliant (`yes`)**
+
+-   Feature meets all identified regulatory requirements
+-   No violations detected
+-   Ready for implementation
+
+**Non-Compliant (`no`)**
+
+-   Clear regulatory violations identified
+-   Specific requirements cited
+-   Modification recommendations provided
+
+**Unclear (`unknown`)**
+
+-   Insufficient information for definitive assessment
+-   Additional context required
+-   User input needed for re-evaluation
+
+---
+
+## User Interaction
+
+### Handling Uncertain Results
+
+When the system returns `unknown`:
+
+1. **Review Suggestions**: Check recommended areas for clarification
+2. **Update Description**: Provide additional feature details
+3. **Clarify Terminology**: Refine technical terms used
+4. **Re-run Check**: Click the rerun button for fresh evaluation
+
+### Feedback and Learning
+
+If you disagree with a result:
+
+1. **Provide Feedback**: Submit your assessment and reasoning
+2. **Learning Integration**: The system's learning agent processes your input
+3. **Re-evaluation**: Run a new check with updated model understanding
+4. **Continuous Improvement**: Your feedback helps improve future assessments
+
+---
+
