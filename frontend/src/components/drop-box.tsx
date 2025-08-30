@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { toast } from "sonner";
 
 interface DropBoxProps {
   onFileUpload?: (files: FileList) => void;
@@ -29,7 +30,7 @@ const DropBox: React.FC<DropBoxProps> = ({
     Array.from(files).forEach((file) => {
       // Check file size
       if (file.size > maxFileSize * 1024 * 1024) {
-        alert(
+        toast.error(
           `File ${file.name} is too large. Maximum size is ${maxFileSize}MB.`
         );
         return;
