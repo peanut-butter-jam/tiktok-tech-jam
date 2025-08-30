@@ -114,7 +114,7 @@ const FeatureDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl w-[95%] max-h-[85vh]">
+      <DialogContent className="sm:max-w-4xl w-[95%] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
             {isEditing ? (

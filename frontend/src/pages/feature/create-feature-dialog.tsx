@@ -67,7 +67,7 @@ const CreateFeatureDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl w-[95%] max-h-[85vh]">
+      <DialogContent className="sm:max-w-4xl w-[95%] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Feature</DialogTitle>
         </DialogHeader>
