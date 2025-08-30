@@ -58,7 +58,7 @@ const RegulationUpload: React.FC = () => {
       <NavBar />
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
+        <div className="bg-gradient-to-r from-blue-400 to-purple-400 text-white py-12">
           <div className="container mx-auto px-4">
             <div className="flex items-center space-x-4">
               <Upload className="h-10 w-10" />
