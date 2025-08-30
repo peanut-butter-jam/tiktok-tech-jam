@@ -46,3 +46,13 @@ export const triggerFeatureCheckById = async (featureId: number) => {
     `${featureBaseUrl}/${featureId}/checks`
   );
 };
+
+export const reconcileFeatureCheck = async (
+  featureId: number,
+  data: { flag: "yes" | "no" | "unknown"; reasoning: string }
+) => {
+  return await apiClient.put<CheckDTO>(
+    `${featureBaseUrl}/${featureId}/checks`,
+    data
+  );
+};

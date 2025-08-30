@@ -7,10 +7,12 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
-import { Copy, Download, Edit, Check, X, RefreshCw } from "lucide-react";
+import { Copy, Download, Edit, Check, X, RefreshCw, AlertTriangle } from "lucide-react";
 import type { FeatureDTOWithCheck, FeatureUpdateDTO, Mapping } from "@/types/dto";
 import CheckDetails from "./check-details";
+import ReconcileDialog from "./reconciliation-dialog";
 import { useState, useEffect } from "react";
+import { useReconcileFeatureCheckMutation } from "@/lib/api/feature-api/query";
 
 interface FeatureDialogProps {
   open: boolean;
@@ -43,6 +45,9 @@ const FeatureDialog = ({
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editTerminologies, setEditTerminologies] = useState<Mapping[]>([]);
+  const [isReconcileModalOpen, setIsReconcileModalOpen] = useState(false);
+
+  const reconcileMutation = useReconcileFeatureCheckMutation();
 
   // Reset when feature changes or dialog opens
   useEffect(() => {
@@ -117,6 +122,27 @@ const FeatureDialog = ({
     }
   };
 
+  const handleReconcile = async (data: {
+    flag: "yes" | "no" | "unknown";
+    reasoning: string;
+  }) => {
+    if (!feature) return;
+
+    try {
+      await reconcileMutation.mutateAsync({
+        featureId: feature.id,
+        data,
+      });
+      setIsReconcileModalOpen(false);
+    } catch (error) {
+      console.error("Reconcile failed:", error);
+    }
+  };
+
+  const handleOpenReconcileModal = () => {
+    setIsReconcileModalOpen(true);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl w-[95%] max-h-[85vh] overflow-y-auto">
@@ -186,6 +212,16 @@ const FeatureDialog = ({
                     title="Download JSON"
                   >
                     <Download className="mr-2 h-4 w-4" /> Download
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleOpenReconcileModal}
+                    title="Reconcile"
+                    disabled={!feature?.latest_check?.eval_result}
+                  >
+                    <AlertTriangle className="mr-2 h-4 w-4" /> Reconcile
                   </Button>
                 </>
               )}
@@ -304,6 +340,15 @@ const FeatureDialog = ({
             <CheckDetails title="Latest Check" check={feature.latest_check} />
           )}
         </div>
+
+        <ReconcileDialog
+          open={isReconcileModalOpen}
+          onOpenChange={setIsReconcileModalOpen}
+          initialFlag={feature?.latest_check?.eval_result?.flag}
+          initialReasoning={feature?.latest_check?.eval_result?.reasoning || ""}
+          onReconcile={handleReconcile}
+          isLoading={reconcileMutation.isPending}
+        />
       </DialogContent>
     </Dialog>
   );
