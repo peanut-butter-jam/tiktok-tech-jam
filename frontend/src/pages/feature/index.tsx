@@ -17,12 +17,16 @@ import FeaturesTable from "./features-table";
 import CreateFeatureDialog from "./create-feature-dialog";
 
 const FeaturesPage = () => {
-  const [selectedFeature, setSelectedFeature] =
-    useState<FeatureDTOWithCheck | null>(null);
+  const [selectedFeatureId, setSelectedFeatureId] = useState<number | null>(
+    null
+  );
   const [openFeatureDialog, setOpenFeatureDialog] = useState(false);
   const [openCreateFeatureDialog, setOpenCreateFeatureDialog] = useState(false);
 
   const { data: features = [], isLoading } = useGetAllFeaturesQuery();
+
+  const selectedFeature =
+    features.find((feature) => feature.id === selectedFeatureId) || null;
 
   const { mutateAsync: createFeature } = useCreateFeatureMutation();
   const { mutateAsync: updateFeature } = useUpdateFeatureMutation();
@@ -48,7 +52,7 @@ const FeaturesPage = () => {
 
   // Updated handleView function
   const handleSelectFeature = (feature: FeatureDTOWithCheck) => {
-    setSelectedFeature(feature);
+    setSelectedFeatureId(feature.id);
     setOpenFeatureDialog(true);
   };
 
@@ -79,19 +83,10 @@ const FeaturesPage = () => {
     featureId: number,
     updatedData: FeatureCreateDTO
   ) => {
-    try {
-      const updatedFeature = await updateFeature({
-        id: featureId,
-        data: updatedData,
-      });
-      // Update the selected feature state with the fresh data from the API
-      if (selectedFeature && selectedFeature.id === featureId) {
-        setSelectedFeature(updatedFeature);
-      }
-    } catch (error) {
-      // Error handling is done by the mutation hook
-      console.error("Failed to update feature:", error);
-    }
+    await updateFeature({
+      id: featureId,
+      data: updatedData,
+    });
   };
 
   return (
@@ -150,7 +145,7 @@ const FeaturesPage = () => {
         onOpenChange={(open) => {
           if (!open) {
             setOpenFeatureDialog(false);
-            setSelectedFeature(null);
+            setSelectedFeatureId(null);
           }
         }}
         feature={selectedFeature}
