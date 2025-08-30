@@ -97,9 +97,6 @@ class FeatureService:
                     # Handle potential race conditions - another request might have inserted it
                     pass
 
-        # Return the updated feature
-        return await self.get_feature_by_id(feature_id)
-
     async def import_features_from_csv(
         self, csv_file: UploadFile
     ) -> List[FeatureDTOWithCheck]:
