@@ -123,7 +123,8 @@ export interface paths {
         get: operations["get_feature_features__feature_id__get"];
         /**
          * Update Feature
-         * @description Update a feature's title and description by ID.
+         * @description Update a feature's title, description, and terminologies by ID.
+         *     Terminologies will be synced to the terminology database automatically.
          */
         put: operations["update_feature_features__feature_id__put"];
         post?: never;
@@ -303,11 +304,37 @@ export interface components {
              */
             updated_at: string;
             /**
+             * Terminologies
+             * @description Terminology mappings
+             */
+            terminologies?: components["schemas"]["Mapping"][] | null;
+            /**
              * Checks
              * @description List of associated checks for this feature
              */
             checks: components["schemas"]["CheckDTO"][];
             readonly latest_check: components["schemas"]["CheckDTO"] | null;
+        };
+        /**
+         * FeatureUpdateDTO
+         * @description Data Transfer Object for updating a Feature
+         */
+        FeatureUpdateDTO: {
+            /**
+             * Title
+             * @description The name of the feature
+             */
+            title: string;
+            /**
+             * Description
+             * @description A brief description of the feature
+             */
+            description: string;
+            /**
+             * Terminologies
+             * @description Terminology mappings
+             */
+            terminologies?: components["schemas"]["Mapping"][] | null;
         };
         /**
          * FlagType
@@ -318,6 +345,19 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** Mapping */
+        Mapping: {
+            /**
+             * Key
+             * @description The short form (e.g., abbreviation or acronym)
+             */
+            key: string;
+            /**
+             * Value
+             * @description The corresponding full form
+             */
+            value: string;
         };
         /** ReconcileCheckResultRequest */
         ReconcileCheckResultRequest: {
@@ -688,7 +728,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FeatureCreateDTO"];
+                "application/json": components["schemas"]["FeatureUpdateDTO"];
             };
         };
         responses: {
