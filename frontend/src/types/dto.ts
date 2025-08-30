@@ -8,6 +8,8 @@ export type RouDTO = components["schemas"]["RouDto"];
 // Feature Endpoints
 export type FeatureDTOWithCheck = components["schemas"]["FeatureDTOWithCheck"];
 export type FeatureCreateDTO = components["schemas"]["FeatureCreateDTO"];
+export type FeatureUpdateDTO = components["schemas"]["FeatureUpdateDTO"];
+export type Mapping = components["schemas"]["Mapping"];
 export type CheckDTO = components["schemas"]["CheckDTO"];
 export type EvalResultDTO = components["schemas"]["EvalResultDTO"];
 export type FlagType = components["schemas"]["FlagType"];

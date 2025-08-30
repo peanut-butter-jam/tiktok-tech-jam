@@ -7,6 +7,7 @@ import {
   updateFeature,
   importFeaturesFromCsv,
   triggerFeatureCheckById,
+  reconcileFeatureCheck,
 } from "./request";
 import { queryClient } from "@/contexts/react-query/react-query-provider";
 import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
@@ -88,6 +89,29 @@ export const useTriggerFeatureCheckMutation = () => {
     },
     onError: (error) => {
       toast.error(`Error triggering feature check: ${error.message}`);
+    },
+  });
+};
+
+export const useReconcileFeatureCheckMutation = () => {
+  return useMutation({
+    mutationFn: ({
+      featureId,
+      data,
+    }: {
+      featureId: number;
+      data: { flag: "yes" | "no" | "unknown"; reasoning: string };
+    }) => reconcileFeatureCheck(featureId, data),
+    onSuccess: (_, variables) => {
+      // Invalidate both the features list and the specific feature
+      queryClient.invalidateQueries({ queryKey: ["features"] });
+      queryClient.invalidateQueries({
+        queryKey: ["feature", variables.featureId],
+      });
+      toast.success(`Feature check reconciled successfully!`);
+    },
+    onError: (error) => {
+      toast.error(`Error reconciling feature check: ${error.message}`);
     },
   });
 };
