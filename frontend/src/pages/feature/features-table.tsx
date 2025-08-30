@@ -18,6 +18,7 @@ interface FeaturesTableProps {
   features: FeatureDTOWithCheck[];
   onSelectFeature: (feature: FeatureDTOWithCheck) => void;
   onDeleteFeature: (feature: FeatureDTOWithCheck) => void;
+  onTriggerFeatureCheck: (feature: FeatureDTOWithCheck) => void;
   isLoading?: boolean;
 }
 
@@ -25,6 +26,7 @@ const FeaturesTable = ({
   features,
   onSelectFeature,
   onDeleteFeature,
+  onTriggerFeatureCheck,
   isLoading = false,
 }: FeaturesTableProps) => {
   return (
@@ -36,7 +38,6 @@ const FeaturesTable = ({
           <TableHead>Flag</TableHead>
           <TableHead>Human Review</TableHead>
           <TableHead>Created Date</TableHead>
-          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -80,6 +81,22 @@ const FeaturesTable = ({
                 )}
               </TableCell>
               <TableCell>{feature.created_at}</TableCell>
+
+              {/* rerun feature check */}
+              <TableCell>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-2 border-gray-500 bg-cyan-50 text-teal-700 hover:!bg-cyan-600 hover:!text-white transition-colors"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onTriggerFeatureCheck(feature);
+                  }}
+                >
+                  Rerun Check
+                </Button>
+              </TableCell>
+
               <TableCell>
                 <Button
                   variant="ghost"
