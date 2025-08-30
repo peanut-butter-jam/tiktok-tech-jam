@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import BackgroundTasks, Depends
 from sqlalchemy.orm import selectinload
 
@@ -8,7 +8,7 @@ from app.services.feature.feature_service import FeatureServiceDep
 from app.services.feature.feat_eval.learning_agent import LearningAgentDep
 from app.database.schemas.enums.check_type import CheckType
 from app.database.schemas.check import Check
-from app.dtos.check_dto import CheckDTO, Status
+from app.dtos.check_dto import CheckCreateDTO, CheckDTO, Status
 from app.database.repositories.check_repository import CheckRepositoryDep
 from app.database.repositories.eval_result_repository import EvalResultRepositoryDep
 from app.dtos.eval_result_dto import HumanReconciledEvalResultDTO
@@ -38,6 +38,20 @@ class CheckService:
             raise LookupError(f"Check with id {check_id} not found.")
 
         return CheckDTO.model_validate(check)
+
+    async def init_checks(self, feature_ids: List[int], check_type: CheckType) -> List[CheckDTO]:
+        new_checks = [
+            CheckCreateDTO(type=check_type, feature_id=feature_id) for feature_id in feature_ids
+        ]
+
+        inserted_checks = await self.check_repository.create_many(
+            [check.to_db() for check in new_checks]
+        )
+        check_with_results = await self.check_repository.get_many_by_ids(
+            [check.id for check in inserted_checks], options=[selectinload(Check.eval_result)]
+        )
+
+        return [CheckDTO.model_validate(check) for check in check_with_results]
 
     async def reconcile_check_result(
         self, feature_id: int, reconciled_result: HumanReconciledEvalResultDTO

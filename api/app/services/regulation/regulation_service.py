@@ -1,14 +1,11 @@
 from typing import Annotated, List
 from chromadb.api.models.Collection import Collection
-from fastapi import BackgroundTasks, Depends
+from fastapi import Depends
 from sqlalchemy.orm import selectinload
 
-from app.dtos.extraction_result import ExtractedRouDto
 from app.database.schemas.regulation import Regulation
 from app.database.repositories.regulation_repository import RegulationRepositoryDep
 from app.dtos.rou_dto import RouDto
-from app.database.schemas.enums.rou_type import RouType
-from app.database.schemas.rou import ROU
 from app.database.repositories.rou_repository import RouRepositoryDep
 from app.clients.chromadb_client import ROU_COLLECTION_NAME, ChromaDbClientDep
 from app.services.regulation.rou_extraction.rou_extract_model import RouExtractModelDep

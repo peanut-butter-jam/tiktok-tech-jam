@@ -1,6 +1,7 @@
 from typing import List
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, BackgroundTasks, UploadFile
 
+from app.services.feature.feat_eval.feature_eval_service import FeatureEvalServiceDep
 from app.dtos.reconcile_check_result_request import ReconcileCheckResultRequest
 from app.dtos.eval_result_dto import HumanReconciledEvalResultDTO
 from app.services.check.check_service import CheckServiceDep
@@ -38,14 +39,15 @@ async def get_feature(feature_id: int, feature_service: FeatureServiceDep):
 async def upload_feature(
     feature: FeatureCreateDTO,
     feature_service: FeatureServiceDep,
-    feat_eval_agent: FeatEvalAgentDep,
+    feature_eval_service: FeatureEvalServiceDep,
+    background_tasks: BackgroundTasks,
 ):
     """
     Create a new feature.
     """
     inserted_feature = await feature_service.create_feature(feature)
 
-    await feat_eval_agent.invoke(feature=inserted_feature)
+    background_tasks.add_task(feature_eval_service.trigger_evals, [inserted_feature.id])
 
     return inserted_feature
 
@@ -61,25 +63,21 @@ async def update_feature(feature_id: int, feature: FeatureUpdateDTO, feature_ser
 
 @router.post("/csv", response_model=List[FeatureDTOWithCheck])
 async def import_features_from_csv(
-    csv_file: UploadFile,
-    feature_service: FeatureServiceDep,
-    feat_eval_agent: FeatEvalAgentDep,
+    csv_file: UploadFile, feature_service: FeatureServiceDep, feature_eval_service: FeatureEvalServiceDep
 ):
     """
     Import features from a CSV file.
     """
     features = await feature_service.import_features_from_csv(csv_file)
 
-    await feat_eval_agent.invoke_multiple(features=[FeatureDTO.model_validate(f) for f in features])
+    await feature_eval_service.trigger_evals([f.id for f in features])
 
     return features
 
 
 @router.post("/{feature_id}/checks", response_model=CheckDTO)
 async def create_feature_check(
-    feature_id: int,
-    feature_service: FeatureServiceDep,
-    feat_eval_agent: FeatEvalAgentDep,
+    feature_id: int, feature_service: FeatureServiceDep, feature_eval_service: FeatureEvalServiceDep
 ):
     """
     Create a new check for a feature.
@@ -87,7 +85,7 @@ async def create_feature_check(
 
     feature = await feature_service.get_feature_by_id(feature_id)
 
-    return await feat_eval_agent.invoke(feature=feature)
+    return (await feature_eval_service.trigger_evals([feature.id]))[0]
 
 
 @router.delete("/{feature_id}", status_code=204)

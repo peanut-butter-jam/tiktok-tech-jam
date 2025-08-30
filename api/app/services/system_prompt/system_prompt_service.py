@@ -48,10 +48,8 @@ class SystemPromptService:
     async def get_active_prompt_text(self, agent_type: AgentType) -> str:
         active_prompt = await self.get_active_prompt(agent_type)
         if not active_prompt:
-            print(f"Using default prompt for agent type: {agent_type}")
             return self.default_prompts[agent_type]
 
-        print(f"Using prompt with version {active_prompt.id} for agent type: {agent_type}")
         return active_prompt.system_prompt
 
     async def patch_prompt(self, new_version: SystemPromptVersionCreateDTO) -> None:

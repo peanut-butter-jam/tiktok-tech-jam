@@ -1,23 +1,20 @@
 from io import BytesIO
 import logging
 from typing import Annotated, List
-from uuid import UUID
 from chromadb.api.models.Collection import Collection
 from fastapi import Depends
-from numpy._core.numerictypes import int32
 
+from app.database.schemas.enums.rou_type import RouType
 from app.dtos.extraction_result import ExtractedRouDto
 from app.dtos.regulation_dto import RegulationDTO
 from app.dtos.rou_dto import RouDto
 from app.clients.chromadb_client import ROU_COLLECTION_NAME, ChromaDbClientDep
 from app.database.schemas.rou import ROU
 from app.services.regulation.pdf_reader import read_pdf
-from app.services.regulation.regulation_service import RegulationServiceDep, RouType
+from app.services.regulation.regulation_service import RegulationServiceDep
 from app.services.supabase.supabase_storage_service import SupabaseStorageServiceDep
 from app.services.regulation.rou_extraction.map_reduce_rou_extractor import MapReduceRouExtractorDep
 from app.database.repositories.rou_repository import RouRepositoryDep
-
-logger = logging.getLogger(__name__)
 
 
 class RouService:
