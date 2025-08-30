@@ -1,6 +1,7 @@
 import {
   type CheckDTO,
   type FeatureCreateDTO,
+  type FeatureUpdateDTO,
   type FeatureDTOWithCheck,
 } from "@/types/dto";
 import apiClient from "../client";
@@ -19,7 +20,7 @@ export const createFeature = async (data: FeatureCreateDTO) => {
   return await apiClient.post<FeatureDTOWithCheck>(featureBaseUrl, data);
 };
 
-export const updateFeature = async (id: number, data: FeatureCreateDTO) => {
+export const updateFeature = async (id: number, data: FeatureUpdateDTO) => {
   return await apiClient.put<FeatureDTOWithCheck>(
     `${featureBaseUrl}/${id}`,
     data

@@ -182,6 +182,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/features/{feature_id}/extract-terminologies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Extract Terminologies For Feature
+         * @description Test endpoint: Extract terminology mappings for a specific feature.
+         *     This will run the terminology mapping agent and return the results without updating the feature.
+         */
+        post: operations["extract_terminologies_for_feature_features__feature_id__extract_terminologies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -307,7 +328,9 @@ export interface components {
              * Terminologies
              * @description Terminology mappings
              */
-            terminologies?: components["schemas"]["Mapping"][] | null;
+            terminologies?: {
+                [key: string]: string;
+            } | null;
             /**
              * Checks
              * @description List of associated checks for this feature
@@ -334,7 +357,9 @@ export interface components {
              * Terminologies
              * @description Terminology mappings
              */
-            terminologies?: components["schemas"]["Mapping"][] | null;
+            terminologies?: {
+                [key: string]: string;
+            } | null;
         };
         /**
          * FlagType
@@ -345,19 +370,6 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
-        };
-        /** Mapping */
-        Mapping: {
-            /**
-             * Key
-             * @description The short form (e.g., abbreviation or acronym)
-             */
-            key: string;
-            /**
-             * Value
-             * @description The corresponding full form
-             */
-            value: string;
         };
         /** ReconcileCheckResultRequest */
         ReconcileCheckResultRequest: {
@@ -867,6 +879,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CheckDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    extract_terminologies_for_feature_features__feature_id__extract_terminologies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feature_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

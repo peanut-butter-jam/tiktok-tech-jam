@@ -11,7 +11,7 @@ import {
   useTriggerFeatureCheckMutation,
   useUpdateFeatureMutation,
 } from "@/lib/api/feature-api/query";
-import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
+import type { FeatureCreateDTO, FeatureUpdateDTO, FeatureDTOWithCheck } from "@/types/dto";
 import FeatureDialog from "./feature-dialog";
 import FeaturesTable from "./features-table";
 import CreateFeatureDialog from "./create-feature-dialog";
@@ -77,7 +77,7 @@ const FeaturesPage = () => {
 
   const handleUpdateFeature = async (
     featureId: number,
-    updatedData: FeatureCreateDTO
+    updatedData: FeatureUpdateDTO
   ) => {
     try {
       const updatedFeature = await updateFeature({
