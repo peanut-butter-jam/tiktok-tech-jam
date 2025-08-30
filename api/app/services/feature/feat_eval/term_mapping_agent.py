@@ -1,18 +1,23 @@
-from typing import Annotated, Dict, List
+import asyncio
+from contextlib import asynccontextmanager
+from typing import Annotated, List
 from fastapi import Depends
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, SystemMessage
-from pydantic import BaseModel, Field, ConfigDict
 
-from app.database.repositories.terminology_repository import TerminologyRepositoryDep
+from app.services.feature.feature_service import FeatureServiceDep, feature_service_context
+from app.database.repositories.terminology_repository import (
+    TerminologyRepositoryDep,
+    terminology_repository_context,
+)
 from app.services.feature.feat_eval.query_terminologies_tool import (
     QueryTerminologiesTool,
 )
-from app.dtos.feature_dto import FeatureDTO
+from app.dtos.feature_dto import FeatureDTO, FeatureUpdateDTO
 from app.dtos.term_mapping_result import Mapping, TermMappingResultDTO
-from app.config.app_config import OpenAIConfigDep
+from app.config.app_config import OpenAIConfigDep, get_app_config
 
 
 user_prompt_template = PromptTemplate.from_template(
@@ -63,11 +68,12 @@ Guidelines:
 )
 
 
-class TerminologyMappingAgent:
+class TermMappingAgent:
     def __init__(
         self,
         openai_config: OpenAIConfigDep,
         terminology_repository: TerminologyRepositoryDep,
+        feature_service: FeatureServiceDep,
     ):
         model = ChatOpenAI(model="gpt-4o-mini", api_key=openai_config.api_key)
         self.agent = create_react_agent(
@@ -75,8 +81,21 @@ class TerminologyMappingAgent:
             response_format=TermMappingResultDTO,
             tools=[QueryTerminologiesTool(terminology_repository=terminology_repository)],
         )
+        self.feature_service = feature_service
 
-    async def extract_terminology_mappings(self, feature: FeatureDTO) -> List[Mapping]:
+    async def ainvoke(self, feature: FeatureDTO) -> FeatureDTO:
+        mappings = await self._generate_mappings(feature)
+
+        updated_feature = await self.feature_service.update_feature(
+            feature.id,
+            FeatureUpdateDTO(
+                title=feature.title, description=feature.description, terminologies=mappings
+            ),
+        )
+
+        return updated_feature
+
+    async def _generate_mappings(self, feature: FeatureDTO) -> List[Mapping]:
         """Extract terminology mappings from a feature"""
         messages = [
             system_prompt,
@@ -88,13 +107,22 @@ class TerminologyMappingAgent:
         ]
 
         res = await self.agent.ainvoke({"messages": messages})
+        res_dto = TermMappingResultDTO.model_validate(res["structured_response"])
 
-        result = TermMappingResultDTO.model_validate(res["structured_response"])
-
-        print(f"Extracted terminology mappings for feature: {feature.title}")
-        print(f"Mappings: {result.mappings}")
-
-        return result.mappings
+        return res_dto.mappings
 
 
-TerminologyMappingAgentDep = Annotated[TerminologyMappingAgent, Depends(TerminologyMappingAgent)]
+TermMappingAgentDep = Annotated[TermMappingAgent, Depends(TermMappingAgent)]
+
+
+@asynccontextmanager
+async def term_mapping_agent_context():
+    """
+    Context manager for TermMappingAgent.
+    """
+    async with feature_service_context() as feature_service, terminology_repository_context() as terminology_repository:
+        yield TermMappingAgent(
+            openai_config=get_app_config().openai,
+            terminology_repository=terminology_repository,
+            feature_service=feature_service,
+        )

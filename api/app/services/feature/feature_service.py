@@ -1,23 +1,23 @@
+from contextlib import asynccontextmanager
 from typing import Annotated, List
-from uuid import UUID
 from fastapi import Depends, UploadFile
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.interfaces import ORMOption
 import pandas as pd
 
 from app.database.schemas.check import Check
 from app.dtos.feature_dto import FeatureCreateDTO, FeatureUpdateDTO, FeatureDTOWithCheck
 from app.database.schemas.feature import Feature
-from app.database.schemas.terminology import Terminology
-from app.database.repositories.feature_repository import FeatureRepositoryDep
-from app.database.repositories.terminology_repository import TerminologyRepositoryDep
+from app.database.repositories.feature_repository import FeatureRepositoryDep, feature_repository_context
+from app.database.repositories.terminology_repository import (
+    TerminologyRepositoryDep,
+    terminology_repository_context,
+)
 
 LOAD_CHECKS_OPTIONS: list[ORMOption] = [selectinload(Feature.checks).selectinload(Check.eval_result)]
 
 
 class FeatureService:
-
     def __init__(
         self,
         feature_repository: FeatureRepositoryDep,
@@ -39,7 +39,7 @@ class FeatureService:
 
         return FeatureDTOWithCheck.model_validate(entry)
 
-    async def get_many_features_by_ids(self, feature_ids: List[int | UUID]) -> List[FeatureDTOWithCheck]:
+    async def get_many_features_by_ids(self, feature_ids: List[int]) -> List[FeatureDTOWithCheck]:
         entries = await self.feature_repository.get_many_by_ids(feature_ids, options=LOAD_CHECKS_OPTIONS)
         return [FeatureDTOWithCheck.model_validate(entry) for entry in entries]
 
@@ -108,3 +108,15 @@ class FeatureService:
 
 
 FeatureServiceDep = Annotated[FeatureService, Depends(FeatureService)]
+
+
+@asynccontextmanager
+async def feature_service_context():
+    """
+    Context manager for FeatureService.
+    """
+    async with feature_repository_context() as feature_repository, terminology_repository_context() as terminology_repository:
+        yield FeatureService(
+            feature_repository=feature_repository,
+            terminology_repository=terminology_repository,
+        )
