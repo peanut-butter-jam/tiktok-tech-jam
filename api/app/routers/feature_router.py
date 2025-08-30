@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import APIRouter, BackgroundTasks
 
+from app.dtos.check_dto import CheckDTO
 from app.services.feature.feat_eval.feat_eval_agent import FeatEvalAgentDep
 from app.dtos.feature_dto import FeatureCreateDTO, FeatureDTOWithCheck
 from app.services.feature.feature_service import FeatureServiceDep
@@ -30,13 +31,25 @@ async def upload_feature(
     feature: FeatureCreateDTO,
     feature_service: FeatureServiceDep,
     feat_eval_agent: FeatEvalAgentDep,
-    background_task: BackgroundTasks,
 ):
     """
     Create a new feature.
     """
     inserted_feature = await feature_service.create_feature(feature)
 
-    background_task.add_task(feat_eval_agent.invoke, feature=inserted_feature)
+    await feat_eval_agent.invoke(feature=inserted_feature)
 
     return inserted_feature
+
+
+@router.post("/{feature_id}/checks", response_model=CheckDTO)
+async def create_feature_check(
+    feature_id: int, feature_service: FeatureServiceDep, feat_eval_agent: FeatEvalAgentDep
+):
+    """
+    Create a new check for a feature.
+    """
+
+    feature = await feature_service.get_feature_by_id(feature_id)
+
+    return await feat_eval_agent.invoke(feature=feature)

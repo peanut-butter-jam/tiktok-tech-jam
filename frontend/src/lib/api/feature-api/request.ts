@@ -1,4 +1,8 @@
-import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
+import {
+  type CheckDTO,
+  type FeatureCreateDTO,
+  type FeatureDTOWithCheck,
+} from "@/types/dto";
 import apiClient from "../client";
 
 const featureBaseUrl = "/features";
@@ -13,4 +17,10 @@ export const getFeatureById = async (id: number) => {
 
 export const createFeature = async (data: FeatureCreateDTO) => {
   return await apiClient.post<FeatureDTOWithCheck>(featureBaseUrl, data);
+};
+
+export const triggerFeatureCheckById = async (featureId: number) => {
+  return await apiClient.post<CheckDTO>(
+    `${featureBaseUrl}/${featureId}/checks`
+  );
 };

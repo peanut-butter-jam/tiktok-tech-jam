@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class Check(Base, SerialIdMixin, TimestampMixin):
     __tablename__ = "checks"
 
-    feature_id: Mapped[int] = mapped_column(ForeignKey("features.id"), nullable=False, unique=True)
+    feature_id: Mapped[int] = mapped_column(ForeignKey("features.id"), nullable=False)
     status: Mapped[Status] = mapped_column(Enum(Status), nullable=False, default=Status.PENDING)
 
     eval_result: Mapped["EvalResult"] = relationship("EvalResult", back_populates="check")
