@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
+from app.database.schemas.enums.check_type import CheckType
 from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
 from app.database.schemas.base import Base
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 class Check(Base, SerialIdMixin, TimestampMixin):
     __tablename__ = "checks"
 
+    type: Mapped[CheckType] = mapped_column(Enum(CheckType), nullable=False)
     feature_id: Mapped[int] = mapped_column(
         ForeignKey("features.id", ondelete="CASCADE"), nullable=False
     )

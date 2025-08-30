@@ -1,6 +1,9 @@
 from typing import List
 from fastapi import APIRouter, UploadFile
 
+from app.dtos.reconcile_check_result_request import ReconcileCheckResultRequest
+from app.dtos.eval_result_dto import HumanReconciledEvalResultDTO
+from app.services.check.check_service import CheckServiceDep
 from app.dtos.check_dto import CheckDTO
 from app.services.feature.feat_eval.feat_eval_agent import FeatEvalAgentDep
 from app.dtos.feature_dto import (
@@ -97,3 +100,15 @@ async def delete_feature_by_id(feature_id: int, feature_service: FeatureServiceD
     Delete a feature by ID.
     """
     await feature_service.delete_feature_by_id(feature_id)
+
+
+@router.put("/{feature_id}/checks", response_model=CheckDTO)
+async def reconcile_feature_check(
+    feature_id: int, reconciled_result: ReconcileCheckResultRequest, check_service: CheckServiceDep
+):
+    """
+    Reconcile a feature's check result.
+    """
+    return await check_service.reconcile_check_result(
+        feature_id, HumanReconciledEvalResultDTO.model_validate(reconciled_result)
+    )

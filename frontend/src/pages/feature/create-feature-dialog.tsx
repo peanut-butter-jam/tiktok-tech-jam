@@ -23,7 +23,7 @@ import { Textarea } from "@/shared/ui/textarea";
 interface CreateFeatureDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: FeatureCreateDTO) => void;
+  onSubmit: (data: FeatureCreateDTO) => Promise<void>;
 }
 
 const CreateFeatureDialog = ({
@@ -35,6 +35,11 @@ const CreateFeatureDialog = ({
     resolver: yupResolver(createFeatureSchema),
   });
 
+  const handleSubmitAndReset = async (data: FeatureCreateDTO) => {
+    await onSubmit(data);
+    form.reset();
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl w-[95%] max-h-[85vh]">
@@ -42,7 +47,10 @@ const CreateFeatureDialog = ({
           <DialogTitle>Create New Feature</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(handleSubmitAndReset)}
+            className="space-y-8"
+          >
             <FormField
               control={form.control}
               name="title"

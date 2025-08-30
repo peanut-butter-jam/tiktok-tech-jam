@@ -121,7 +121,11 @@ export interface paths {
          * @description Get a feature by ID.
          */
         get: operations["get_feature_features__feature_id__get"];
-        put?: never;
+        /**
+         * Update Feature
+         * @description Update a feature's title and description by ID.
+         */
+        put: operations["update_feature_features__feature_id__put"];
         post?: never;
         /**
          * Delete Feature By Id
@@ -161,7 +165,11 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
+        /**
+         * Reconcile Feature Check
+         * @description Reconcile a feature's check result.
+         */
+        put: operations["reconcile_feature_check_features__feature_id__checks_put"];
         /**
          * Create Feature Check
          * @description Create a new check for a feature.
@@ -197,6 +205,7 @@ export interface components {
         CheckDTO: {
             /** Id */
             id: number;
+            type: components["schemas"]["CheckType"];
             status: components["schemas"]["Status"];
             eval_result: components["schemas"]["EvalResultDTO"] | null;
             /**
@@ -210,10 +219,20 @@ export interface components {
              */
             updated_at: string;
         };
+        /**
+         * CheckType
+         * @enum {string}
+         */
+        CheckType: "human" | "ai";
         /** EvalResultDTO */
         EvalResultDTO: {
             /** @description Whether the feature requires geo-specific compliance logic. 'yes' = requires geo-specific logic; 'no' = does not; 'unknown' = insufficient evidence. */
             flag: components["schemas"]["FlagType"];
+            /**
+             * Reasoning
+             * @description Concise, audit-ready explanation supporting the decision.
+             */
+            reasoning: string;
             /**
              * Require Human Review
              * @description Whether human review is required for this evaluation.
@@ -224,11 +243,6 @@ export interface components {
              * @description Confidence score (0.0-1.0) based strictly on input evidence.
              */
             confidence: number;
-            /**
-             * Reasoning
-             * @description Concise, audit-ready explanation supporting the decision.
-             */
-            reasoning: string;
             /**
              * Recommended Actions
              * @description Suggested next steps for engineering/legal.
@@ -304,6 +318,12 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** ReconcileCheckResultRequest */
+        ReconcileCheckResultRequest: {
+            flag: components["schemas"]["FlagType"];
+            /** Reasoning */
+            reasoning: string;
         };
         /**
          * RegulationCreateDTO
@@ -657,6 +677,41 @@ export interface operations {
             };
         };
     };
+    update_feature_features__feature_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feature_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeatureCreateDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeatureDTOWithCheck"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     delete_feature_by_id_features__feature_id__delete: {
         parameters: {
             query?: never;
@@ -706,6 +761,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FeatureDTOWithCheck"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_feature_check_features__feature_id__checks_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feature_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReconcileCheckResultRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckDTO"];
                 };
             };
             /** @description Validation Error */

@@ -9,6 +9,8 @@ from app.database.schemas.chat_message import ChatMessage
 from app.database.schemas.feature import Feature
 from app.database.schemas.eval_result import EvalResult
 from app.database.schemas.terminology import Terminology
+from app.database.schemas.active_prompt import ActivePrompt
+from app.database.schemas.system_prompt_version import SystemPromptVersion
 
 __all__ = [
     "Base",
@@ -22,4 +24,6 @@ __all__ = [
     "ChatMessage",
     "Feature",
     "Terminology",
+    "ActivePrompt",
+    "SystemPromptVersion",
 ]

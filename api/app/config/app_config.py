@@ -8,6 +8,7 @@ from pydantic_settings import (
     YamlConfigSettingsSource,
 )
 
+from app.config.models.learning_agent_config import LearningAgentConfig
 from app.config.models.feat_eval_config import FeatEvalConfig
 from app.config.models.openai_config import OpenAIConfig
 from app.config.models.supabase_config import SupabaseConfig
@@ -20,6 +21,7 @@ class AppConfig(BaseSettings):
     supabase: SupabaseConfig
     openai: OpenAIConfig
     feat_eval: FeatEvalConfig
+    learning_agent: LearningAgentConfig
 
     model_config = SettingsConfigDict(
         yaml_file=[f"config/{EnvConfig().env}.yaml"],  # type: ignore
@@ -56,4 +58,7 @@ SupabaseConfigDep = Annotated[
 OpenAIConfigDep = Annotated[OpenAIConfig, Depends(lambda config=Depends(get_app_config): config.openai)]
 FeatEvalConfigDep = Annotated[
     FeatEvalConfig, Depends(lambda config=Depends(get_app_config): config.feat_eval)
+]
+LearningAgentConfigDep = Annotated[
+    LearningAgentConfig, Depends(lambda config=Depends(get_app_config): config.learning_agent)
 ]
