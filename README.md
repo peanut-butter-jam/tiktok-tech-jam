@@ -123,7 +123,7 @@ If you disagree with a result:
 
 ---
 
-## Setup Guide
+# Setup Guide
 
 This project consists of three main components that need to be set up to run the application:
 
