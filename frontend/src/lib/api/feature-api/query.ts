@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createFeature,
+  deleteFeatureById,
   getAllFeatures,
   getFeatureById,
   triggerFeatureCheckById,
@@ -30,6 +31,19 @@ export const useCreateFeatureMutation = () => {
     },
     onError: (error) => {
       toast.error(`Error uploading feature: ${error.message}`);
+    },
+  });
+};
+
+export const useDeleteFeatureByIdMutation = () => {
+  return useMutation({
+    mutationFn: deleteFeatureById,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["features"] });
+      toast.success(`Feature deleted successfully!`);
+    },
+    onError: (error) => {
+      toast.error(`Error deleting feature: ${error.message}`);
     },
   });
 };

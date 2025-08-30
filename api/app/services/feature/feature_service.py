@@ -30,6 +30,9 @@ class FeatureService:
 
         return FeatureDTOWithCheck.model_validate(entry)
 
+    async def delete_feature_by_id(self, feature_id: int) -> None:
+        await self.feature_repository.delete_by_id(feature_id)
+
     async def create_feature(self, feature: FeatureCreateDTO) -> FeatureDTOWithCheck:
         inserted = await self.feature_repository.create(
             Feature(

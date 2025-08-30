@@ -123,7 +123,11 @@ export interface paths {
         get: operations["get_feature_features__feature_id__get"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Feature By Id
+         * @description Delete a feature by ID.
+         */
+        delete: operations["delete_feature_by_id_features__feature_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -613,6 +617,35 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FeatureDTOWithCheck"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_feature_by_id_features__feature_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feature_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

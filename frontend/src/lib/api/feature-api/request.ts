@@ -19,6 +19,10 @@ export const createFeature = async (data: FeatureCreateDTO) => {
   return await apiClient.post<FeatureDTOWithCheck>(featureBaseUrl, data);
 };
 
+export const deleteFeatureById = async (id: number) => {
+  return await apiClient.delete<void>(`${featureBaseUrl}/${id}`);
+};
+
 export const triggerFeatureCheckById = async (featureId: number) => {
   return await apiClient.post<CheckDTO>(
     `${featureBaseUrl}/${featureId}/checks`

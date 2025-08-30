@@ -5,6 +5,7 @@ import Pagination from "@/components/pagination";
 import { useState } from "react";
 import {
   useCreateFeatureMutation,
+  useDeleteFeatureByIdMutation,
   useGetAllFeaturesQuery,
 } from "@/lib/api/feature-api/query";
 import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
@@ -18,9 +19,10 @@ const FeaturesPage = () => {
   const [openFeatureDialog, setOpenFeatureDialog] = useState(false);
   const [openCreateFeatureDialog, setOpenCreateFeatureDialog] = useState(false);
 
-  const { data: features = [] } = useGetAllFeaturesQuery();
+  const { data: features = [], isLoading } = useGetAllFeaturesQuery();
 
   const { mutateAsync: createFeature } = useCreateFeatureMutation();
+  const { mutateAsync: deleteFeatureById } = useDeleteFeatureByIdMutation();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,7 +47,7 @@ const FeaturesPage = () => {
 
   // Dummy logic for handleDelete
   const handleDelete = (feature: FeatureDTOWithCheck) => {
-    console.log(`Deleting feature: ${feature.id}`);
+    deleteFeatureById(feature.id);
   };
 
   const handleCreateFeature = async (feature: FeatureCreateDTO) => {
@@ -91,6 +93,7 @@ const FeaturesPage = () => {
             features={paginatedData}
             onSelectFeature={handleSelectFeature}
             onDeleteFeature={handleDelete}
+            isLoading={isLoading}
           />
 
           {/* Pagination */}

@@ -53,3 +53,11 @@ async def create_feature_check(
     feature = await feature_service.get_feature_by_id(feature_id)
 
     return await feat_eval_agent.invoke(feature=feature)
+
+
+@router.delete("/{feature_id}", status_code=204)
+async def delete_feature_by_id(feature_id: int, feature_service: FeatureServiceDep):
+    """
+    Delete a feature by ID.
+    """
+    await feature_service.delete_feature_by_id(feature_id)
