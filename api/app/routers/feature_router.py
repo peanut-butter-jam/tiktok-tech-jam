@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, BackgroundTasks
 
 from app.services.feature.feat_eval.feat_eval_agent import FeatEvalAgentDep
-from app.dtos.feature_dto import FeatureCreateDTO, FeatureDTOWithCheck
+from app.dtos.feature_dto import FeatureCreateDTO, FeatureUpdateDTO, FeatureDTOWithCheck
 from app.services.feature.feature_service import FeatureServiceDep
 
 
@@ -43,8 +43,9 @@ async def upload_feature(
 
 
 @router.put("/{feature_id}", response_model=FeatureDTOWithCheck)
-async def update_feature(feature_id: int, feature: FeatureCreateDTO, feature_service: FeatureServiceDep):
+async def update_feature(feature_id: int, feature: FeatureUpdateDTO, feature_service: FeatureServiceDep):
     """
-    Update a feature's title and description by ID.
+    Update a feature's title, description, and terminologies by ID.
+    Terminologies will be synced to the terminology database automatically.
     """
     return await feature_service.update_feature(feature_id, feature)

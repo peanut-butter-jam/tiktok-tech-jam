@@ -8,6 +8,7 @@ from app.database.schemas.chat_session import ChatSession
 from app.database.schemas.chat_message import ChatMessage
 from app.database.schemas.feature import Feature
 from app.database.schemas.eval_result import EvalResult
+from app.database.schemas.terminology import Terminology
 
 __all__ = [
     "Base",
@@ -20,4 +21,5 @@ __all__ = [
     "ChatSession",
     "ChatMessage",
     "Feature",
+    "Terminology",
 ]
