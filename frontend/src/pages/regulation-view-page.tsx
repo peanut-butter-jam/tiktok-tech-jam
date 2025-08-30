@@ -179,26 +179,17 @@ const RegulationView = () => {
                 <div className="space-y-4">
                   {paginatedRous.map((rou: RouDto) => (
                     <div key={rou.id} className="border rounded-lg p-4 bg-muted/50">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_3fr] gap-4 mb-4">
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">ID:</span>
-                          <p className="font-medium">{rou.id}</p>
+                          <span className="text-sm font-medium text-foreground">ID: {rou.id}</span>
                         </div>
+
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">Type:</span>
-                          <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                            rou.type === 'human' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                          }`}>
-                            {rou.type}
-                          </span>
+                          <span className="text-sm font-medium text-foreground">Source ID: {rou.source_id}</span>
                         </div>
+
                         <div>
-                          <span className="text-sm font-medium text-muted-foreground">Jurisdiction:</span>
-                          <p className="font-medium">{rou.jurisdiction}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-muted-foreground">Source ID:</span>
-                          <p className="font-medium">{rou.source_id}</p>
+                          <span className="text-sm font-medium text-foreground">Jurisdiction: {rou.jurisdiction}</span>
                         </div>
                       </div>
                       
@@ -207,12 +198,7 @@ const RegulationView = () => {
                           <span className="text-sm font-medium text-muted-foreground">Description:</span>
                           <p className="mt-1">{rou.desc}</p>
                         </div>
-                        
-                        <div>
-                          <span className="text-sm font-medium text-muted-foreground">Canonical Text:</span>
-                          <p className="mt-1 text-sm bg-white p-3 rounded border">{rou.canonical_text}</p>
-                        </div>
-                        
+
                         {rou.obligations && rou.obligations.length > 0 && (
                           <div>
                             <span className="text-sm font-medium text-muted-foreground">Obligations:</span>
