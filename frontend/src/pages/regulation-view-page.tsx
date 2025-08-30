@@ -128,16 +128,7 @@ const RegulationView = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-2 text-foreground flex items-center">
-                  <Database className="h-5 w-5 mr-2" />
-                  ID
-                </h3>
-                <p className="text-foreground bg-muted p-4 rounded-lg">
-                  {regulation.id}
-                </p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               <div>
                 <h3 className="text-lg font-semibold mb-2 text-foreground flex items-center">
@@ -159,15 +150,6 @@ const RegulationView = () => {
                 </p>
               </div>
             </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-foreground">
-                File Object ID
-              </h3>
-              <p className="text-foreground bg-muted p-4 rounded-lg font-mono text-sm break-all">
-                {regulation.file_object_id}
-              </p>
-            </div>
 
             {/* ROUs Section */}
             {rous.length > 0 ? (
@@ -179,13 +161,9 @@ const RegulationView = () => {
                 <div className="space-y-4">
                   {paginatedRous.map((rou: RouDto) => (
                     <div key={rou.id} className="border rounded-lg p-4 bg-muted/50">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_3fr] gap-4 mb-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_3fr] gap-4 mb-4">
                         <div>
                           <span className="text-sm font-medium text-foreground">ID: {rou.id}</span>
-                        </div>
-
-                        <div>
-                          <span className="text-sm font-medium text-foreground">Source ID: {rou.source_id}</span>
                         </div>
 
                         <div>
