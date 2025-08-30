@@ -7,8 +7,12 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
-import { Copy, Download, Edit, Check, X, RefreshCw, AlertTriangle } from "lucide-react";
-import type { FeatureDTOWithCheck, FeatureUpdateDTO, Mapping } from "@/types/dto";
+import { Edit, Check, X, RefreshCw, AlertTriangle } from "lucide-react";
+import type {
+  FeatureDTOWithCheck,
+  FeatureUpdateDTO,
+  Mapping,
+} from "@/types/dto";
 import CheckDetails from "./check-details";
 import ReconcileDialog from "./reconciliation-dialog";
 import { useState, useEffect } from "react";
@@ -58,28 +62,6 @@ const FeatureDialog = ({
       setEditTerminologies(feature.terminologies || []);
     }
   }, [feature]);
-  const handleDownloadJSON = () => {
-    if (!feature) return;
-    const blob = new Blob([JSON.stringify(feature, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `feature-${feature.id}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleCopyJSON = async () => {
-    if (!feature) return;
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(feature, null, 2));
-      // optional: show toast
-    } catch (e) {
-      // ignore
-    }
-  };
 
   const handleTriggerFeatureCheck = async () => {
     if (!feature) return;
@@ -113,7 +95,8 @@ const FeatureDialog = ({
       await onUpdateFeature(feature.id, {
         title: editTitle,
         description: editDescription,
-        terminologies: editTerminologies.length > 0 ? editTerminologies : undefined,
+        terminologies:
+          editTerminologies.length > 0 ? editTerminologies : undefined,
       });
       setIsEditing(false);
     } catch (error) {
@@ -197,22 +180,6 @@ const FeatureDialog = ({
                   >
                     <Edit className="mr-2 h-4 w-4" /> Edit
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCopyJSON}
-                    title="Copy JSON"
-                  >
-                    <Copy className="mr-2 h-4 w-4" /> Copy
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleDownloadJSON}
-                    title="Download JSON"
-                  >
-                    <Download className="mr-2 h-4 w-4" /> Download
-                  </Button>
 
                   <Button
                     variant="ghost"
@@ -252,7 +219,7 @@ const FeatureDialog = ({
 
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <p 
+              <p
                 className="text-sm text-muted-foreground border-b border-dotted border-muted-foreground cursor-help"
                 title="Define abbreviations and acronyms used in this feature. These mappings help our AI understand technical terms for better compliance evaluation."
               >
@@ -269,7 +236,10 @@ const FeatureDialog = ({
                         value={mapping.key}
                         onChange={(e) => {
                           const newTerminologies = [...editTerminologies];
-                          newTerminologies[index] = { ...mapping, key: e.target.value };
+                          newTerminologies[index] = {
+                            ...mapping,
+                            key: e.target.value,
+                          };
                           setEditTerminologies(newTerminologies);
                         }}
                         className="text-sm"
@@ -281,7 +251,10 @@ const FeatureDialog = ({
                         value={mapping.value}
                         onChange={(e) => {
                           const newTerminologies = [...editTerminologies];
-                          newTerminologies[index] = { ...mapping, value: e.target.value };
+                          newTerminologies[index] = {
+                            ...mapping,
+                            value: e.target.value,
+                          };
                           setEditTerminologies(newTerminologies);
                         }}
                         className="text-sm"
@@ -291,7 +264,9 @@ const FeatureDialog = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        const newTerminologies = editTerminologies.filter((_, i) => i !== index);
+                        const newTerminologies = editTerminologies.filter(
+                          (_, i) => i !== index
+                        );
                         setEditTerminologies(newTerminologies);
                       }}
                       className="shrink-0"
@@ -306,7 +281,7 @@ const FeatureDialog = ({
                   onClick={() => {
                     setEditTerminologies([
                       ...editTerminologies,
-                      { key: "", value: "" }
+                      { key: "", value: "" },
                     ]);
                   }}
                   className="text-xs mt-2"
@@ -330,7 +305,9 @@ const FeatureDialog = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="text-sm text-muted-foreground">No terminologies defined</div>
+                  <div className="text-sm text-muted-foreground">
+                    No terminologies defined
+                  </div>
                 )}
               </div>
             )}

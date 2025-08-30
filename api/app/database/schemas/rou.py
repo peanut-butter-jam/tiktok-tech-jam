@@ -19,7 +19,9 @@ class RegulatoryObligationUnit(Base, SerialIdMixin, TimestampMixin):
     obligations: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     jurisdiction: Mapped[str] = mapped_column(String, nullable=False)
 
-    source_id: Mapped[int] = mapped_column(ForeignKey("regulations.id"), nullable=False)
+    source_id: Mapped[int] = mapped_column(
+        ForeignKey("regulations.id", ondelete="CASCADE"), nullable=False
+    )
     source: Mapped["Regulation"] = relationship("Regulation", back_populates="rous")
 
 

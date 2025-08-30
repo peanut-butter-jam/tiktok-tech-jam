@@ -10,7 +10,7 @@ from app.dtos.extraction_result import DedupResult, ExtractedRouDto
 class RouDedupModel:
     def __init__(self, openai_config: OpenAIConfigDep):
         self.dedup_model = ChatOpenAI(
-            model=openai_config.model, api_key=openai_config.api_key
+            model="gpt-4o-mini", api_key=openai_config.api_key
         ).with_structured_output(DedupResult)
         self.system_prompt = """
 You are an expert compliance analyst specializing in global geo-regulations.  

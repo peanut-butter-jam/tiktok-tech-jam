@@ -42,6 +42,8 @@ class RegulationService:
     async def get_all_regulations(self) -> List[RegulationDTO]:
         entries = await self.regulation_repository.get_all(options=[selectinload(Regulation.rous)])
 
+        entries.sort(key=lambda reg: reg.id)
+
         return [RegulationDTO.model_validate(reg) for reg in entries]
 
     async def get_regulation_by_id(self, regulation_id: int) -> RegulationDTO:
@@ -53,6 +55,9 @@ class RegulationService:
             raise ValueError(f"Regulation with ID {regulation_id} not found")
 
         return RegulationDTO.model_validate(entry)
+
+    async def delete_regulation_by_id(self, regulation_id: int) -> None:
+        await self.regulation_repository.delete_by_id(regulation_id)
 
     async def query_relevant_rous(self, query: str) -> List[RouDto]:
         rous_collection: Collection = self.chromadb_client.get_collection(ROU_COLLECTION_NAME)

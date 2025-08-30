@@ -38,14 +38,16 @@ Then, provide the most suitable mapping for each term based on the terminology k
 
 ---
 
-## Mapping Instructions
-1. Identify all terms in the feature description that appear in the terminology knowledge base.
+## Instructions
+1. Identify all terms in the feature description.
 2. For each term:
-   - Match it to the most suitable definition from the knowledge base.
+   - Use the QueryTerminologiesTool to find all potential matches in the knowledge base.
    - If multiple definitions could apply, choose the one that best fits the feature context.
-   - If no suitable match exists, leave the term unmapped or suggest a new definition label.
-3. Replace all terms in the feature description with their full definitions **only for internal context purposes**; do not modify the original feature text.
-4. Return a mapping context that will be passed to the Evaluator Agent.
+   - If no existing / suitable match exists, you MUST give your assumption based on the feature context.
+   
+Rules:
+- You MUST provide a mapping for each identified term.
+- All detected abbreviations, jargon, and domain-specific terms must be included in the output.
 
 ---
 
@@ -57,16 +59,6 @@ Then, provide the most suitable mapping for each term based on the terminology k
     {{"key": "API", "value": "Application Programming Interface"}}
   ]
 }}
-
----
-
-## Best Practices
-- Provide **one mapping per term** if possible.
-- Include all detected abbreviations, jargon, and domain-specific terms.
-- Suggest new labels for unmapped terms only when necessary.
-- Keep the mapping **concise, precise, and machine-readable** for downstream use.
-- Do **not** attempt compliance evaluation; your sole task is terminology mapping.
-
 """
 )
 

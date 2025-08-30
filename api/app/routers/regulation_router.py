@@ -46,3 +46,11 @@ async def get_regulation(regulation_id: int, regulation_service: RegulationServi
     Get a regulation by ID.
     """
     return await regulation_service.get_regulation_by_id(regulation_id)
+
+
+@router.delete("/{regulation_id}")
+async def delete_regulation(regulation_id: int, regulation_service: RegulationServiceDep):
+    """
+    Delete a regulation by ID.
+    """
+    await regulation_service.delete_regulation_by_id(regulation_id)

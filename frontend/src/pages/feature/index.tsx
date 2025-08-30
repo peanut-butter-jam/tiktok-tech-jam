@@ -1,6 +1,6 @@
 import NavBar from "@/components/nav-bar";
 import { Button } from "@/shared/ui/button";
-import { Plus, RefreshCcw, Settings } from "lucide-react";
+import { Download, Plus, RefreshCcw, Settings } from "lucide-react";
 import Pagination from "@/components/pagination";
 import { useEffect, useState } from "react";
 import {
@@ -68,6 +68,41 @@ const FeaturesPage = () => {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+  const handleDownloadJSON = () => {
+    if (!features) return;
+    const blob = new Blob(
+      [
+        JSON.stringify(
+          features.map((feature) => {
+            return {
+              title: feature.title,
+              description: feature.description,
+              ...(feature.latest_check?.eval_result
+                ? {
+                    flag: feature.latest_check.eval_result.flag,
+                    reasoning: feature.latest_check.eval_result.reasoning,
+                    recommended_actions:
+                      feature.latest_check.eval_result.recommended_actions,
+                  }
+                : {}),
+            };
+          }),
+          null,
+          2
+        ),
+      ],
+      {
+        type: "application/json",
+      }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `result.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -158,6 +193,14 @@ const FeaturesPage = () => {
                 }`}
               />
               Reload
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadJSON}
+              title="Download JSON"
+            >
+              <Download className="mr-2 h-4 w-4" /> Download
             </Button>
           </div>
 
