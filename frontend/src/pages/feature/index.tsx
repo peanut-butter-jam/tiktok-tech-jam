@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   useCreateFeatureMutation,
   useGetAllFeaturesQuery,
+  useUpdateFeatureMutation,
 } from "@/lib/api/feature-api/query";
 import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
 import FeatureDialog from "./feature-dialog";
@@ -21,6 +22,7 @@ const FeaturesPage = () => {
   const { data: features = [] } = useGetAllFeaturesQuery();
 
   const { mutateAsync: createFeature } = useCreateFeatureMutation();
+  const { mutateAsync: updateFeature } = useUpdateFeatureMutation();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,6 +53,19 @@ const FeaturesPage = () => {
   const handleCreateFeature = async (feature: FeatureCreateDTO) => {
     createFeature(feature);
     setOpenCreateFeatureDialog(false);
+  };
+
+  const handleUpdateFeature = async (featureId: number, updatedData: FeatureCreateDTO) => {
+    try {
+      const updatedFeature = await updateFeature({ id: featureId, data: updatedData });
+      // Update the selected feature state with the fresh data from the API
+      if (selectedFeature && selectedFeature.id === featureId) {
+        setSelectedFeature(updatedFeature);
+      }
+    } catch (error) {
+      // Error handling is done by the mutation hook
+      console.error("Failed to update feature:", error);
+    }
   };
 
   return (
@@ -111,6 +126,7 @@ const FeaturesPage = () => {
           }
         }}
         feature={selectedFeature}
+        onUpdateFeature={handleUpdateFeature}
       />
 
       <CreateFeatureDialog

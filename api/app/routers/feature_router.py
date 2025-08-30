@@ -40,3 +40,11 @@ async def upload_feature(
     background_task.add_task(feat_eval_agent.invoke, feature=inserted_feature)
 
     return inserted_feature
+
+
+@router.put("/{feature_id}", response_model=FeatureDTOWithCheck)
+async def update_feature(feature_id: int, feature: FeatureCreateDTO, feature_service: FeatureServiceDep):
+    """
+    Update a feature's title and description by ID.
+    """
+    return await feature_service.update_feature(feature_id, feature)
