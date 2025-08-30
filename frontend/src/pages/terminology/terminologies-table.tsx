@@ -8,7 +8,7 @@ import {
 } from "@/shared/ui/table";
 import { Button } from "@/shared/ui/button";
 import type { TerminologyDTO } from "@/types/dto";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { Spinner } from "@/shared/ui/spinner";
 import { Trash2 } from "lucide-react";
 
 interface TerminologiesTableProps {
@@ -46,8 +46,8 @@ const TerminologiesTable = ({
         )}
         {!isLoading &&
           terminologies.map((terminology) => (
-            <TableRow 
-              key={terminology.id} 
+            <TableRow
+              key={terminology.id}
               onClick={() => onSelectTerminology?.(terminology)}
               className="cursor-pointer hover:bg-muted/50"
             >

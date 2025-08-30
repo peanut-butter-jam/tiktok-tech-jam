@@ -4,8 +4,6 @@ from app.database.schemas.file_object import FileObject
 from app.database.schemas.rou import ROU
 from app.database.schemas.regulation import Regulation
 from app.database.schemas.check import Check
-from app.database.schemas.chat_session import ChatSession
-from app.database.schemas.chat_message import ChatMessage
 from app.database.schemas.feature import Feature
 from app.database.schemas.eval_result import EvalResult
 from app.database.schemas.terminology import Terminology
@@ -20,8 +18,6 @@ __all__ = [
     "Regulation",
     "Check",
     "EvalResult",
-    "ChatSession",
-    "ChatMessage",
     "Feature",
     "Terminology",
     "ActivePrompt",

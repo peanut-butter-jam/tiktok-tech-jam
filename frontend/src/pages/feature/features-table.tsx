@@ -12,7 +12,7 @@ import { Trash2 } from "lucide-react";
 import FlagBadge from "./flag-badge";
 import StatusBadge from "./status-badge";
 import HumanReviewBadge from "./human-review-badge";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { Spinner } from "@/shared/ui/spinner";
 
 interface FeaturesTableProps {
   features: FeatureDTOWithCheck[];
