@@ -12,6 +12,8 @@ This repository is a boilerplate codebase for a full-stack application using the
 -   ESLint & Prettier: For code linting and formatting.
 -   Docker: For containerizing the application and managing dependencies.
 
+---
+
 ## Architecture
 
 ### Core Components
@@ -21,6 +23,8 @@ This repository is a boilerplate codebase for a full-stack application using the
 3. **Term Mapper Agent** - Extracts and contextualizes special terminology
 4. **Evaluation Agent** - Performs compliance assessment against regulatory database
 5. **Learning Agent** - Incorporates user feedback for continuous improvement
+
+---
 
 ## How It Works
 
@@ -95,6 +99,8 @@ The system provides structured output for each evaluation:
 -   Additional context required
 -   User input needed for re-evaluation
 
+---
+
 ## User Interaction
 
 ### Handling Uncertain Results
@@ -115,6 +121,8 @@ If you disagree with a result:
 3. **Re-evaluation**: Run a new check with updated model understanding
 4. **Continuous Improvement**: Your feedback helps improve future assessments
 
+---
+
 ## Setup Guide
 
 This project consists of three main components that need to be set up to run the application:
@@ -124,8 +132,6 @@ This project consists of three main components that need to be set up to run the
 3. Database (Supabase/PostgreSQL)
 
 **Recommended order: Database → Backend → Frontend**
-
----
 
 ### 1. Database (Supabase / PostgreSQL)
 
