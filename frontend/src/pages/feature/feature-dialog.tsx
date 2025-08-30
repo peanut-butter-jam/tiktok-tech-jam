@@ -7,7 +7,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
-import { Copy, Download, Edit, Check, X } from "lucide-react";
+import { Copy, Download, Edit, Check, X, RefreshCw } from "lucide-react";
 import type { FeatureDTOWithCheck, FeatureCreateDTO } from "@/types/dto";
 import CheckDetails from "./check-details";
 import { useState, useEffect } from "react";
@@ -16,7 +16,11 @@ interface FeatureDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   feature: FeatureDTOWithCheck | null;
-  onUpdateFeature: (featureId: number, updatedData: FeatureCreateDTO) => Promise<void>;
+  onUpdateFeature: (
+    featureId: number,
+    updatedData: FeatureCreateDTO
+  ) => Promise<void>;
+  onTriggerFeatureCheck: (feature: FeatureDTOWithCheck) => void;
 }
 
 const prettyDate = (iso?: string | null) => {
@@ -28,7 +32,13 @@ const prettyDate = (iso?: string | null) => {
   }
 };
 
-const FeatureDialog = ({ open, onOpenChange, feature, onUpdateFeature }: FeatureDialogProps) => {
+const FeatureDialog = ({
+  open,
+  onOpenChange,
+  feature,
+  onUpdateFeature,
+  onTriggerFeatureCheck,
+}: FeatureDialogProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
@@ -64,6 +74,17 @@ const FeatureDialog = ({ open, onOpenChange, feature, onUpdateFeature }: Feature
     }
   };
 
+  const handleTriggerFeatureCheck = async () => {
+    if (!feature) return;
+
+    try {
+      await onTriggerFeatureCheck(feature);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to trigger feature check:", error);
+    }
+  };
+
   const handleStartEdit = () => {
     setIsEditing(true);
     setEditTitle(feature?.title || "");
@@ -78,7 +99,7 @@ const FeatureDialog = ({ open, onOpenChange, feature, onUpdateFeature }: Feature
 
   const handleConfirmEdit = async () => {
     if (!feature) return;
-    
+
     try {
       await onUpdateFeature(feature.id, {
         title: editTitle,
@@ -106,7 +127,7 @@ const FeatureDialog = ({ open, onOpenChange, feature, onUpdateFeature }: Feature
             ) : (
               <DialogTitle>{feature ? feature.title : "Feature"}</DialogTitle>
             )}
-            
+
             <div className="flex items-center gap-1">
               {isEditing ? (
                 <>
@@ -129,6 +150,14 @@ const FeatureDialog = ({ open, onOpenChange, feature, onUpdateFeature }: Feature
                 </>
               ) : (
                 <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleTriggerFeatureCheck}
+                    title="Rerun feature check"
+                  >
+                    <RefreshCw className="mr-2 h-4 w-4" /> Rerun Check
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

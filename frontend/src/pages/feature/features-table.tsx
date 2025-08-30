@@ -12,17 +12,22 @@ import { Trash2 } from "lucide-react";
 import FlagBadge from "./flag-badge";
 import StatusBadge from "./status-badge";
 import HumanReviewBadge from "./human-review-badge";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 interface FeaturesTableProps {
   features: FeatureDTOWithCheck[];
   onSelectFeature: (feature: FeatureDTOWithCheck) => void;
   onDeleteFeature: (feature: FeatureDTOWithCheck) => void;
+  onTriggerFeatureCheck: (feature: FeatureDTOWithCheck) => void;
+  isLoading?: boolean;
 }
 
 const FeaturesTable = ({
   features,
   onSelectFeature,
   onDeleteFeature,
+  onTriggerFeatureCheck,
+  isLoading = false,
 }: FeaturesTableProps) => {
   return (
     <Table>
@@ -33,54 +38,79 @@ const FeaturesTable = ({
           <TableHead>Flag</TableHead>
           <TableHead>Human Review</TableHead>
           <TableHead>Created Date</TableHead>
-          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {features.map((feature) => (
-          <TableRow key={feature.id} onClick={() => onSelectFeature(feature)}>
-            <TableCell>{feature.title}</TableCell>
-            <TableCell>
-              {feature.latest_check?.status ? (
-                <StatusBadge status={feature.latest_check.status} />
-              ) : (
-                "No Check"
-              )}
-            </TableCell>
-            <TableCell>
-              {feature.latest_check?.eval_result?.flag ? (
-                <FlagBadge flag={feature.latest_check.eval_result.flag} />
-              ) : (
-                "No Result"
-              )}
-            </TableCell>
-            <TableCell>
-              {feature.latest_check?.eval_result?.require_human_review !==
-              undefined ? (
-                <HumanReviewBadge
-                  require_human_review={
-                    feature.latest_check.eval_result.require_human_review
-                  }
-                />
-              ) : (
-                "No Result"
-              )}
-            </TableCell>
-            <TableCell>{feature.created_at}</TableCell>
-            <TableCell>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onDeleteFeature(feature);
-                }}
-              >
-                <Trash2 className="h-4 w-4 mr-1 text-red-500" />
-              </Button>
+        {isLoading && (
+          <TableRow>
+            <TableCell colSpan={6} className="py-5">
+              <div className="flex justify-center items-center">
+                <Spinner />
+              </div>
             </TableCell>
           </TableRow>
-        ))}
+        )}
+        {!isLoading &&
+          features.map((feature) => (
+            <TableRow key={feature.id} onClick={() => onSelectFeature(feature)}>
+              <TableCell>{feature.title}</TableCell>
+              <TableCell>
+                {feature.latest_check?.status ? (
+                  <StatusBadge status={feature.latest_check.status} />
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+              <TableCell>
+                {feature.latest_check?.eval_result?.flag ? (
+                  <FlagBadge flag={feature.latest_check.eval_result.flag} />
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+              <TableCell>
+                {feature.latest_check?.eval_result?.require_human_review !==
+                undefined ? (
+                  <HumanReviewBadge
+                    require_human_review={
+                      feature.latest_check.eval_result.require_human_review
+                    }
+                  />
+                ) : (
+                  "-"
+                )}
+              </TableCell>
+              <TableCell>{feature.created_at}</TableCell>
+
+              {/* rerun feature check */}
+              <TableCell>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-2 border-gray-500 bg-cyan-50 text-teal-700 hover:!bg-cyan-600 hover:!text-white transition-colors"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onTriggerFeatureCheck(feature);
+                  }}
+                >
+                  Rerun Check
+                </Button>
+              </TableCell>
+
+              <TableCell>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onDeleteFeature(feature);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-1 text-red-500" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   );

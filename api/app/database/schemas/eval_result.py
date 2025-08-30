@@ -15,7 +15,9 @@ if TYPE_CHECKING:
 class EvalResult(Base, SerialIdMixin):
     __tablename__ = "eval_results"
 
-    check_id: Mapped[int] = mapped_column(ForeignKey("checks.id"), nullable=False, unique=True)
+    check_id: Mapped[int] = mapped_column(
+        ForeignKey("checks.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
 
     flag: Mapped[FlagType] = mapped_column(Enum(FlagType), nullable=False)
     require_human_review: Mapped[bool] = mapped_column(Boolean, nullable=False)

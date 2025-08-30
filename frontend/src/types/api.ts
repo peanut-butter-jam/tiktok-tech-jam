@@ -123,6 +123,50 @@ export interface paths {
         get: operations["get_feature_features__feature_id__get"];
         put?: never;
         post?: never;
+        /**
+         * Delete Feature By Id
+         * @description Delete a feature by ID.
+         */
+        delete: operations["delete_feature_by_id_features__feature_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/features/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import Features From Csv
+         * @description Import features from a CSV file.
+         */
+        post: operations["import_features_from_csv_features_csv_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/features/{feature_id}/checks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Feature Check
+         * @description Create a new check for a feature.
+         */
+        post: operations["create_feature_check_features__feature_id__checks_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -133,6 +177,14 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_import_features_from_csv_features_csv_post */
+        Body_import_features_from_csv_features_csv_post: {
+            /**
+             * Csv File
+             * Format: binary
+             */
+            csv_file: string;
+        };
         /** Body_upload_regulation_file_regulations_file_post */
         Body_upload_regulation_file_regulations_file_post: {
             /**
@@ -592,6 +644,99 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FeatureDTOWithCheck"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_feature_by_id_features__feature_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feature_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_features_from_csv_features_csv_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_features_from_csv_features_csv_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeatureDTOWithCheck"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_feature_check_features__feature_id__checks_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feature_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckDTO"];
                 };
             };
             /** @description Validation Error */

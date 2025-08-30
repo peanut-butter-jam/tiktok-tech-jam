@@ -1,4 +1,8 @@
-import type { FeatureCreateDTO, FeatureDTOWithCheck } from "@/types/dto";
+import {
+  type CheckDTO,
+  type FeatureCreateDTO,
+  type FeatureDTOWithCheck,
+} from "@/types/dto";
 import apiClient from "../client";
 
 const featureBaseUrl = "/features";
@@ -20,4 +24,23 @@ export const updateFeature = async (id: number, data: FeatureCreateDTO) => {
         `${featureBaseUrl}/${id}`,
         data
     );
+};
+
+export const importFeaturesFromCsv = async (file: File) => {
+  const formData = new FormData();
+  formData.append("csv_file", file);
+  return await apiClient.post<FeatureDTOWithCheck[]>(
+    `${featureBaseUrl}/csv`,
+    formData
+  );
+};
+
+export const deleteFeatureById = async (id: number) => {
+  return await apiClient.delete<void>(`${featureBaseUrl}/${id}`);
+};
+
+export const triggerFeatureCheckById = async (featureId: number) => {
+  return await apiClient.post<CheckDTO>(
+    `${featureBaseUrl}/${featureId}/checks`
+  );
 };
