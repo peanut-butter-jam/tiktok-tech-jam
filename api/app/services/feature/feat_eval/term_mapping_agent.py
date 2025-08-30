@@ -17,48 +17,73 @@ from app.config.app_config import OpenAIConfigDep
 
 user_prompt_template = PromptTemplate.from_template(
     """
-Analyze the following feature and identify all potential short forms (abbreviations, acronyms, etc.) that need terminology mapping:
+You are an expert terminology mapping agent. Your task is to analyze a product feature description and identify all abbreviations, domain-specific terms, or internal jargon. Then, provide the most suitable mapping for each term based on the terminology knowledge base supplied.
 
-Feature:
-- Title: {feature_name}
-- Description: {feature_desc}
+---
 
-Your task:
-1. Extract all potential short forms from the feature title and description
-2. For each short form, use the QueryTerminologiesTool to check if mappings exist in the database
-3. If mappings exist, choose the most appropriate one based on context
-4. If no mappings exist, infer the best possible meaning from context
-5. Return a JSON object with key-value pairs (short form -> long form)
+## Input
+1. **Feature artifacts**: 
+    - title: {feature_name}
+    - description: {feature_desc}
+2. **Terminology knowledge base**: a list of known abbreviations or terms with their definitions accessible via the QueryTerminologiesTool.
 
-Focus on:
-- Abbreviations (e.g., "DB" -> "Database")
-- Acronyms (e.g., "API" -> "Application Programming Interface") 
-- Technical terms that might have short forms
-- Domain-specific terminology
+---
 
-Example output format:
-{{
-  "mappings": [
-    {{"key": "AI", "value": "Artificial Intelligence"}},
-    {{"key": "ML", "value": "Machine Learning"}},
-    {{"key": "API", "value": "Application Programming Interface"}}
-  ]
-}}
+## Mapping Instructions
+1. Identify all terms in the feature description that appear in the terminology knowledge base.
+2. For each term:
+   - Match it to the most suitable definition from the knowledge base.
+   - If multiple definitions could apply, choose the one that best fits the feature context.
+   - If no suitable match exists, leave the term unmapped or suggest a new definition label.
+3. Replace all terms in the feature description with their full definitions **only for internal context purposes**; do not modify the original feature text.
+4. Return a mapping context that will be passed to the Evaluator Agent.
+
+---
+
+## Output Format (JSON)
+{
+  "feature_id": "<unique feature identifier>",
+  "mapped_terms": [
+    {
+      "term": "<original term>",
+      "mapping": "<definition or expanded form>"
+    },
+    ...
+  ],
+  "unmapped_terms": ["<terms not found in the knowledge base or needing new labels>"]
+}
+
+---
+
+## Best Practices
+- Provide **one mapping per term** if possible.
+- Include all detected abbreviations, jargon, and domain-specific terms.
+- Suggest new labels for unmapped terms only when necessary.
+- Keep the mapping **concise, precise, and machine-readable** for downstream use.
+- Do **not** attempt compliance evaluation; your sole task is terminology mapping.
+
 """
 )
 
 system_prompt = SystemMessage(
     content="""
-You are a terminology mapping expert. Your job is to identify short forms in feature descriptions and map them to their appropriate long forms.
+You are a terminology mapping expert. Your task is to identify abbreviations, acronyms, and domain-specific short forms in a product feature description and map them to their appropriate long forms.
 
-Guidelines:
-1. Be contextually aware - the same short form might have different meanings in different contexts
-2. Use the QueryTerminologiesTool to check existing mappings in the database
-3. If multiple mappings exist for a short form, choose the most contextually appropriate one
-4. If no database mapping exists, use your knowledge to infer the most likely meaning
-5. Only include mappings that are actually present in the input text
-6. Focus on technical terminology, abbreviations, and acronyms
-7. Return results in the exact JSON format specified
+---
+
+## Task Guidelines
+1. Detect all short forms, abbreviations, or acronyms present in the feature description.
+2. Always check existing mappings using the QueryTerminologiesTool before inferring meanings.
+3. If multiple mappings exist for a term, choose the one that is most contextually appropriate.
+4. If no mapping exists in the database, keep the term in `unmapped_terms` for downstream review.
+5. Be contextually aware: consider the surrounding text to disambiguate terms.
+6. Consolidate multiple occurrences of the same term into a single mapping unless context requires separate interpretations.
+7. Maintain consistency: reuse existing mappings across features whenever context allows.
+8. Focus exclusively on technical abbreviations, acronyms, and terms that affect product behavior, data handling, or user interactions.
+9. Do not perform compliance evaluation; your task is strictly terminology mapping.
+10. Prioritize accuracy over coverage: only include terms that are actually present in the input text.
+11. Ensure the output is in valid JSON format as specified.
+
 """
 )
 
@@ -73,7 +98,9 @@ class TerminologyMappingAgent:
         self.agent = create_react_agent(
             model=model,
             response_format=TermMappingResultDTO,
-            tools=[QueryTerminologiesTool(terminology_repository=terminology_repository)],
+            tools=[
+                QueryTerminologiesTool(terminology_repository=terminology_repository)
+            ],
         )
 
     async def extract_terminology_mappings(self, feature: FeatureDTO) -> List[Mapping]:
@@ -97,4 +124,6 @@ class TerminologyMappingAgent:
         return result.mappings
 
 
-TerminologyMappingAgentDep = Annotated[TerminologyMappingAgent, Depends(TerminologyMappingAgent)]
+TerminologyMappingAgentDep = Annotated[
+    TerminologyMappingAgent, Depends(TerminologyMappingAgent)
+]
