@@ -4,7 +4,7 @@ from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
 from app.config.app_config import OpenAIConfigDep
-from app.dtos.extraction_result import DedupResult, ExtractedRouDto, ExtractionResult
+from app.dtos.extraction_result import DedupResult, ExtractedRouDto
 
 
 class RouDedupModel:

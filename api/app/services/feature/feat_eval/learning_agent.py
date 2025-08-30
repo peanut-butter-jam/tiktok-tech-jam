@@ -25,9 +25,7 @@ class LearningAgent:
         system_prompt_service: SystemPromptServiceDep,
     ):
         model = ChatOpenAI(model=openai_config.model, api_key=openai_config.api_key)
-        self.agent = create_react_agent(
-            model=model, response_format=LearningResultDTO, tools=[], debug=True
-        )
+        self.agent = create_react_agent(model=model, response_format=LearningResultDTO, tools=[])
         self.config = learning_agent_config
         self.system_prompt_service = system_prompt_service
 

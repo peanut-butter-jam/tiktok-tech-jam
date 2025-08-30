@@ -25,7 +25,8 @@ from app.config.app_config import OpenAIConfigDep, get_app_config
 
 user_prompt_template = PromptTemplate.from_template(
     """
-You are an expert terminology mapping agent. Your task is to analyze a product feature description and identify all abbreviations, domain-specific terms, or internal jargon. Then, provide the most suitable mapping for each term based on the terminology knowledge base supplied.
+You are an expert terminology mapping agent. Your task is to analyze a product feature description and identify all abbreviations, domain-specific terms, or internal jargon.
+Then, provide the most suitable mapping for each term based on the terminology knowledge base supplied.
 
 ---
 
@@ -49,17 +50,13 @@ You are an expert terminology mapping agent. Your task is to analyze a product f
 ---
 
 ## Output Format (JSON)
-{
-  "feature_id": "<unique feature identifier>",
-  "mapped_terms": [
-    {
-      "term": "<original term>",
-      "mapping": "<definition or expanded form>"
-    },
-    ...
-  ],
-  "unmapped_terms": ["<terms not found in the knowledge base or needing new labels>"]
-}
+{{
+  "mappings": [
+    {{"key": "AI", "value": "Artificial Intelligence"}},
+    {{"key": "ML", "value": "Machine Learning"}},
+    {{"key": "API", "value": "Application Programming Interface"}}
+  ]
+}}
 
 ---
 
@@ -107,9 +104,7 @@ class TermMappingAgent:
         self.agent = create_react_agent(
             model=model,
             response_format=TermMappingResultDTO,
-            tools=[
-                QueryTerminologiesTool(terminology_repository=terminology_repository)
-            ],
+            tools=[QueryTerminologiesTool(terminology_repository=terminology_repository)],
         )
         self.feature_service = feature_service
 

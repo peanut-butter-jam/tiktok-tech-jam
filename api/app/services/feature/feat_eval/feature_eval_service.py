@@ -11,7 +11,7 @@ from app.services.feature.feat_eval.feat_eval_agent import feat_eval_agent_conte
 from app.services.feature.feat_eval.term_mapping_agent import term_mapping_agent_context
 
 # Max 10 concurrent evaluations
-semaphore = asyncio.Semaphore(15)
+semaphore = asyncio.Semaphore(10)
 
 
 class FeatureEvalService:
