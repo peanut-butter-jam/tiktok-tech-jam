@@ -110,9 +110,7 @@ class BaseRepository(Generic[Model]):
         res = await self.update_many_by_ids([id], data)
         return res[0] if res else None
 
-    async def update_many_by_ids(
-        self, ids: list[UUID | int], data: BaseModel
-    ) -> list[Model]:
+    async def update_many_by_ids(self, ids: list[UUID | int], data: BaseModel) -> list[Model]:
         """
         Update multiple instances of the model by their IDs.
 
@@ -164,7 +162,7 @@ class BaseRepository(Generic[Model]):
         await self.session.commit()
         return rows.rowcount
 
-    async def get_by_filter(self, **kwargs) -> list[Model]:
+    async def get_by_filter(self, options: list[ORMOption] | None = None, **kwargs) -> list[Model]:
         """
         Get instances of the model by filtering with keyword arguments.
 
@@ -184,5 +182,31 @@ class BaseRepository(Generic[Model]):
                 conditions.append(col == value)
 
         q = select(self.model).where(*conditions)
+        if options:
+            q = q.options(*options)
         rows = await self.session.execute(q)
         return list(rows.unique().scalars().all())
+
+    async def delete_by_filter(self, **kwargs) -> int:
+        """
+        Delete instances of the model by filtering with keyword arguments.
+
+        Args:
+            **kwargs: Filter criteria as keyword arguments.
+
+        Returns:
+            int: The number of rows deleted.
+        """
+        conditions = []
+
+        for key, value in kwargs.items():
+            col = getattr(self.model, key)
+            if isinstance(value, (list, tuple, set)):
+                conditions.append(col.in_(value))
+            else:
+                conditions.append(col == value)
+
+        q = delete(self.model).where(*conditions)
+        rows = await self.session.execute(q)
+        await self.session.commit()
+        return rows.rowcount

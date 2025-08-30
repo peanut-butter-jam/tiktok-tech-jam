@@ -6,16 +6,18 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage
 from sqlalchemy.orm import selectinload
 
+from app.dtos.system_prompt_dto import AgentType
+from app.services.system_prompt.system_prompt_service import SystemPromptServiceDep
 from app.database.schemas import Check, EvalResult
 from app.database.schemas.enums.status import Status
 from app.database.repositories.check_repository import CheckRepositoryDep
 from app.database.repositories.eval_result_repository import EvalResultRepositoryDep
 from app.dtos.eval_result_dto import EvalResultDTO
 from app.services.feature.feat_eval.query_rous_tool import QueryRousTool
-from app.dtos.check_dto import CheckCreateDTO, CheckDTO, CheckUpdateDTO
-from app.dtos.feature_dto import FeatureDTO, FeatureDTOWithCheck
+from app.dtos.check_dto import CheckCreateDTO, CheckDTO, CheckType, CheckUpdateDTO
+from app.dtos.feature_dto import FeatureDTO
 from app.services.regulation.regulation_service import RegulationServiceDep
-from app.config.app_config import FeatEvalConfigDep, OpenAIConfigDep
+from app.config.app_config import OpenAIConfigDep
 
 user_prompt_template = PromptTemplate.from_template(
     """
@@ -32,10 +34,10 @@ class FeatEvalAgent:
     def __init__(
         self,
         openai_config: OpenAIConfigDep,
-        feat_eval_config: FeatEvalConfigDep,
         regulation_service: RegulationServiceDep,
         check_repository: CheckRepositoryDep,
         eval_result_repository: EvalResultRepositoryDep,
+        system_prompt_service: SystemPromptServiceDep,
         background_task: BackgroundTasks,
     ):
         model = ChatOpenAI(model="gpt-4o-mini", api_key=openai_config.api_key)
@@ -43,10 +45,11 @@ class FeatEvalAgent:
             model=model,
             response_format=EvalResultDTO,
             tools=[QueryRousTool(regulation_service=regulation_service)],
+            debug=True,
         )
-        self.system_prompt = feat_eval_config.system_prompt
         self.check_repository = check_repository
         self.eval_result_repository = eval_result_repository
+        self.system_prompt_service = system_prompt_service
         self.background_task = background_task
 
     async def invoke(self, feature: FeatureDTO) -> CheckDTO:
@@ -69,7 +72,9 @@ class FeatEvalAgent:
         await self._update_check_with_result(check.id, eval_result)
 
     async def _init_checks(self, feature_ids: List[int]) -> List[CheckDTO]:
-        new_checks = [CheckCreateDTO(feature_id=feature_id) for feature_id in feature_ids]
+        new_checks = [
+            CheckCreateDTO(type=CheckType.AI, feature_id=feature_id) for feature_id in feature_ids
+        ]
 
         inserted_checks = await self.check_repository.create_many(
             [check.to_db() for check in new_checks]
@@ -81,8 +86,11 @@ class FeatEvalAgent:
         return [CheckDTO.model_validate(check) for check in checks_with_result]
 
     async def _eval_feature(self, feature: FeatureDTO) -> EvalResultDTO:
+        system_prompt = await self.system_prompt_service.get_active_prompt_text(
+            AgentType.FEATURE_EVAL_AGENT
+        )
         messages = [
-            self.system_prompt,
+            system_prompt,
             HumanMessage(
                 content=user_prompt_template.format_prompt(
                     feature_name=feature.title, feature_desc=feature.description
