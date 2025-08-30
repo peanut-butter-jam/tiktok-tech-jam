@@ -75,7 +75,7 @@ class TermMappingAgent:
         terminology_repository: TerminologyRepositoryDep,
         feature_service: FeatureServiceDep,
     ):
-        model = ChatOpenAI(model="gpt-4o-mini", api_key=openai_config.api_key)
+        model = ChatOpenAI(model=openai_config.model, api_key=openai_config.api_key)
         self.agent = create_react_agent(
             model=model,
             response_format=TermMappingResultDTO,

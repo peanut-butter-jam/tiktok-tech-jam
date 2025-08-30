@@ -143,3 +143,5 @@ learning_agent:
       {reconciled_output}
 
     Based on this, propose an optimized version of the agent's system prompt and provide a brief patch summary explaining your changes.
+openai:
+  model: "gpt-4.1-mini"

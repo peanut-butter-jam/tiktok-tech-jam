@@ -51,7 +51,7 @@ class FeatEvalAgent:
         eval_result_repository: EvalResultRepositoryDep,
         system_prompt_service: SystemPromptServiceDep,
     ):
-        model = ChatOpenAI(model="gpt-4o-mini", api_key=openai_config.api_key)
+        model = ChatOpenAI(model=openai_config.model, api_key=openai_config.api_key)
         self.agent = create_react_agent(
             model=model,
             response_format=EvalResultDTO,

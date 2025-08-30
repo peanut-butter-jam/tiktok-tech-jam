@@ -10,7 +10,7 @@ from app.dtos.extraction_result import DedupResult, ExtractedRouDto, ExtractionR
 class RouDedupModel:
     def __init__(self, openai_config: OpenAIConfigDep):
         self.dedup_model = ChatOpenAI(
-            model="gpt-4o-mini", api_key=openai_config.api_key
+            model=openai_config.model, api_key=openai_config.api_key
         ).with_structured_output(DedupResult)
         self.system_prompt = """
 You are an expert compliance analyst specializing in global geo-regulations.  
@@ -36,18 +36,14 @@ Additional Context for Accuracy:
 - If two ROUs differ slightly but impose distinct requirements (e.g., one covers “feeds” and another “notifications”), keep both.  
 """
 
-    def _build_prompts(
-        self, rous_lists: List[List[ExtractedRouDto]]
-    ) -> List[BaseMessage]:
+    def _build_prompts(self, rous_lists: List[List[ExtractedRouDto]]) -> List[BaseMessage]:
         """
         Build the input prompts for the LLM based on the context and sample data.
 
         Args:
             text (str): The regulation text to extract ROUs from.
         """
-        instruction = (
-            f"Deduplicate and merge the following lists of ROUs:\n\n{rous_lists}"
-        )
+        instruction = f"Deduplicate and merge the following lists of ROUs:\n\n{rous_lists}"
         messages = [
             SystemMessage(content=self.system_prompt),
             HumanMessage(content=instruction),
@@ -55,9 +51,7 @@ Additional Context for Accuracy:
 
         return messages
 
-    async def dedup(
-        self, rous_lists: List[List[ExtractedRouDto]]
-    ) -> List[ExtractedRouDto]:
+    async def dedup(self, rous_lists: List[List[ExtractedRouDto]]) -> List[ExtractedRouDto]:
         """
         Extract ROUs from a text chunk.
 

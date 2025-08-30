@@ -29,7 +29,11 @@ class FeatureService:
     async def get_all_features(self) -> List[FeatureDTOWithCheck]:
         entries = await self.feature_repository.get_all(options=LOAD_CHECKS_OPTIONS)
 
-        return [FeatureDTOWithCheck.model_validate(entry) for entry in entries]
+        dtos = [FeatureDTOWithCheck.model_validate(entry) for entry in entries]
+
+        dtos.sort(key=lambda x: x.id)
+
+        return dtos
 
     async def get_feature_by_id(self, feature_id: int) -> FeatureDTOWithCheck:
         entry = await self.feature_repository.get_one_by_id(feature_id, options=LOAD_CHECKS_OPTIONS)

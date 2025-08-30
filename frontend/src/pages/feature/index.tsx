@@ -1,8 +1,8 @@
 import NavBar from "@/components/nav-bar";
 import { Button } from "@/shared/ui/button";
-import { Plus, Settings } from "lucide-react";
+import { Plus, RefreshCcw, Settings } from "lucide-react";
 import Pagination from "@/components/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useCreateFeatureMutation,
   useDeleteFeatureByIdMutation,
@@ -11,7 +11,11 @@ import {
   useTriggerFeatureCheckMutation,
   useUpdateFeatureMutation,
 } from "@/lib/api/feature-api/query";
-import type { FeatureCreateDTO, FeatureUpdateDTO, FeatureDTOWithCheck } from "@/types/dto";
+import type {
+  FeatureCreateDTO,
+  FeatureUpdateDTO,
+  FeatureDTOWithCheck,
+} from "@/types/dto";
 import FeatureDialog from "./feature-dialog";
 import FeaturesTable from "./features-table";
 import CreateFeatureDialog from "./create-feature-dialog";
@@ -23,7 +27,12 @@ const FeaturesPage = () => {
   const [openFeatureDialog, setOpenFeatureDialog] = useState(false);
   const [openCreateFeatureDialog, setOpenCreateFeatureDialog] = useState(false);
 
-  const { data: features = [], isLoading } = useGetAllFeaturesQuery();
+  const {
+    data: features = [],
+    isLoading,
+    isFetching,
+    refetch: refetchFeatures,
+  } = useGetAllFeaturesQuery();
 
   const selectedFeature =
     features.find((feature) => feature.id === selectedFeatureId) || null;
@@ -34,6 +43,20 @@ const FeaturesPage = () => {
   const { mutateAsync: triggerFeatureCheck } = useTriggerFeatureCheckMutation();
   const { mutateAsync: importFeaturesFromCsv } =
     useImportFeaturesFromCsvMutation();
+
+  const shouldPoll = features.some(
+    (feature) =>
+      !feature.latest_check || feature.latest_check.status === "pending"
+  );
+
+  useEffect(() => {
+    if (shouldPoll) {
+      const interval = setInterval(() => {
+        refetchFeatures();
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [shouldPoll, refetchFeatures]);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -122,7 +145,22 @@ const FeaturesPage = () => {
 
         {/* Table */}
         <div className="container mx-auto px-4 py-12">
-          <h2 className="text-2xl font-semibold mb-6">All Features</h2>
+          <div className="flex items-center gap-2 mb-6">
+            <h2 className="text-2xl font-semibold">All Features</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetchFeatures()}
+            >
+              <RefreshCcw
+                className={`w-4 h-4 mr-2 ${
+                  isFetching || isLoading ? "animate-spin" : ""
+                }`}
+              />
+              Reload
+            </Button>
+          </div>
+
           <FeaturesTable
             features={paginatedData}
             onSelectFeature={handleSelectFeature}
