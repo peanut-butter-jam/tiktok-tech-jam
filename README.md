@@ -21,7 +21,7 @@ Steps:
 
 1. Navigate to the supabase directory:
     ```
-    cd /supabase
+    cd supabase/
     ```
 2. Install dependencies:
     ```
@@ -59,7 +59,7 @@ Steps:
 
 1. Navigate to the backend directory:
     ```
-    cd /api
+    cd api/
     ```
 2. Create and activate a virtual environment, then install dependencies:
     ```
@@ -83,7 +83,7 @@ Steps:
 
 1. Navigate to the frontend directory:
     ```
-    cd /frontend
+    cd frontend/
     ```
 1. Install dependencies:
     ```
@@ -111,7 +111,7 @@ Once the database is running and backend migrations are applied:
     ```
 2. Start the frontend:
     ```
-    cd /frontend
+    cd frontend/
     npm run dev
     ```
 
