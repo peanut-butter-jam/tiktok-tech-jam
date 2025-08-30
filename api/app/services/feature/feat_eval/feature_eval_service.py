@@ -7,7 +7,7 @@ from app.dtos.feature_dto import FeatureDTO
 from app.database.schemas.enums.check_type import CheckType
 from app.services.check.check_service import CheckServiceDep
 from app.services.feature.feature_service import FeatureServiceDep
-from app.services.feature.feat_eval.feat_eval_agent import FeatEvalAgentDep
+from app.services.feature.feat_eval.feat_eval_agent import feat_eval_agent_context
 from app.services.feature.feat_eval.term_mapping_agent import term_mapping_agent_context
 
 # Max 10 concurrent evaluations
@@ -19,12 +19,10 @@ class FeatureEvalService:
         self,
         feature_service: FeatureServiceDep,
         check_service: CheckServiceDep,
-        feat_eval_agent: FeatEvalAgentDep,
         background_tasks: BackgroundTasks,
     ):
         self.feature_service = feature_service
         self.check_service = check_service
-        self.feat_eval_agent = feat_eval_agent
         self.background_tasks = background_tasks
 
     async def _trigger_eval(self, feature: FeatureDTO, check: CheckDTO):
@@ -35,7 +33,8 @@ class FeatureEvalService:
                 async with term_mapping_agent_context() as term_mapping_agent:
                     feature_to_eval = await term_mapping_agent.ainvoke(feature)
 
-            await self.feat_eval_agent.ainvoke(feature_to_eval, check)
+            async with feat_eval_agent_context() as feat_eval_agent:
+                await feat_eval_agent.ainvoke(feature_to_eval, check)
 
     async def trigger_evals(self, feature_ids: List[int]) -> List[CheckDTO]:
         checks = await self.check_service.init_checks(feature_ids, check_type=CheckType.AI)
@@ -46,7 +45,7 @@ class FeatureEvalService:
                 *[self._trigger_eval(feature, check) for feature, check in zip(features, checks)]
             )
 
-        self.background_tasks.add_task(run_concurrent_tasks, features, checks)
+        asyncio.create_task(run_concurrent_tasks(features, checks))
 
         return checks
 

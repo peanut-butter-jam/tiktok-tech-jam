@@ -1,14 +1,19 @@
+from contextlib import asynccontextmanager
 from typing import Annotated, List
 from chromadb.api.models.Collection import Collection
 from fastapi import Depends
 from sqlalchemy.orm import selectinload
 
+from app.config.app_config import get_app_config
 from app.database.schemas.regulation import Regulation
-from app.database.repositories.regulation_repository import RegulationRepositoryDep
+from app.database.repositories.regulation_repository import (
+    RegulationRepositoryDep,
+    regulation_repository_context,
+)
 from app.dtos.rou_dto import RouDto
-from app.database.repositories.rou_repository import RouRepositoryDep
-from app.clients.chromadb_client import ROU_COLLECTION_NAME, ChromaDbClientDep
-from app.services.regulation.rou_extraction.rou_extract_model import RouExtractModelDep
+from app.database.repositories.rou_repository import RouRepositoryDep, rou_repository_context
+from app.clients.chromadb_client import ROU_COLLECTION_NAME, ChromaDbClientDep, get_chromadb_client
+from app.services.regulation.rou_extraction.rou_extract_model import RouExtractModel, RouExtractModelDep
 from app.dtos.regulation_dto import RegulationCreateDTO, RegulationDTO
 
 
@@ -60,3 +65,19 @@ class RegulationService:
 
 
 RegulationServiceDep = Annotated[RegulationService, Depends(RegulationService)]
+
+
+@asynccontextmanager
+async def regulation_service_context():
+    """
+    Context manager for RegulationService.
+    """
+    openai_config = get_app_config().openai
+    rou_extractor = RouExtractModel(openai_config=openai_config)
+    async with rou_repository_context() as rou_repo, regulation_repository_context() as regulation_repo:
+        yield RegulationService(
+            rou_extractor=rou_extractor,
+            rou_repository=rou_repo,
+            chromadb_client=get_chromadb_client(openai_config=openai_config),
+            regulation_repository=regulation_repo,
+        )

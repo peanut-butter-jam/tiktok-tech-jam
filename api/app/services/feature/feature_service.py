@@ -62,32 +62,7 @@ class FeatureService:
         # Update the feature using the repository's update_by_id method (full replacement)
         await self.feature_repository.update_by_id(feature_id, feature_update)
 
-        # Sync terminologies to terminology table if provided
-        # if feature_update.terminologies:
-        #     await self._sync_terminologies_to_table(feature_update.terminologies)
-
-        # Return the updated feature
         return await self.get_feature_by_id(feature_id)
-
-    # async def _sync_terminologies_to_table(self, terminologies: dict[str, str]) -> None:
-    #     """Check if key-value pairs exist in terminology table, insert if not"""
-    #     for key, value in terminologies.items():
-    #         if not key or not value:  # Skip empty keys/values
-    #             continue
-
-    #         # Check if this exact key-value pair exists
-    #         existing_pairs = await self.terminology_repository.get_by_filter(
-    #             key=key, value=value
-    #         )
-
-    #         if not existing_pairs:
-    #             # Insert new key-value pair
-    #             try:
-    #                 new_terminology = Terminology(key=key, value=value)
-    #                 await self.terminology_repository.create(new_terminology)
-    #             except IntegrityError:
-    #                 # Handle potential race conditions - another request might have inserted it
-    #                 pass
 
     async def import_features_from_csv(self, csv_file: UploadFile) -> List[FeatureDTOWithCheck]:
         if csv_file.content_type != "text/csv":
