@@ -42,6 +42,14 @@ async def upload_feature(
     return inserted_feature
 
 
+@router.put("/{feature_id}", response_model=FeatureDTOWithCheck)
+async def update_feature(feature_id: int, feature: FeatureCreateDTO, feature_service: FeatureServiceDep):
+    """
+    Update a feature's title and description by ID.
+    """
+    return await feature_service.update_feature(feature_id, feature)
+
+
 @router.post("/csv", response_model=List[FeatureDTOWithCheck])
 async def import_features_from_csv(
     csv_file: UploadFile,

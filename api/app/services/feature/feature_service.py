@@ -43,6 +43,20 @@ class FeatureService:
 
         return await self.get_feature_by_id(inserted.id)
 
+    async def update_feature(
+        self, feature_id: int, feature_update: FeatureCreateDTO
+    ) -> FeatureDTOWithCheck:
+        # First check if the feature exists
+        existing_feature = await self.feature_repository.get_one_by_id(feature_id)
+        if not existing_feature:
+            raise ValueError("Feature not found")
+
+        # Update the feature using the repository's update_by_id method (full replacement)
+        await self.feature_repository.update_by_id(feature_id, feature_update)
+
+        # Return the updated feature
+        return await self.get_feature_by_id(feature_id)
+
     async def import_features_from_csv(self, csv_file: UploadFile) -> List[FeatureDTOWithCheck]:
         if csv_file.content_type != "text/csv":
             raise ValueError("Invalid file type. Please upload a CSV file.")
