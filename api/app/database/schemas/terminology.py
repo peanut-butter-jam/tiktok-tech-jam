@@ -1,4 +1,4 @@
-from sqlalchemy import Text, String
+from sqlalchemy import Text, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database.schemas.mixins.serial_id_mixin import SerialIdMixin
 from app.database.schemas.mixins.timestamp_mixin import TimestampMixin
@@ -10,3 +10,7 @@ class Terminology(Base, SerialIdMixin, TimestampMixin):
 
     key: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     value: Mapped[str] = mapped_column(Text, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('key', 'value', name='uq_terminology_key_value'),
+    )

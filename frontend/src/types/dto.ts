@@ -14,3 +14,7 @@ export type CheckDTO = components["schemas"]["CheckDTO"];
 export type EvalResultDTO = components["schemas"]["EvalResultDTO"];
 export type FlagType = components["schemas"]["FlagType"];
 export type Status = components["schemas"]["Status"];
+
+// Terminology Endpoints
+export type TerminologyDTO = components["schemas"]["TerminologyDTO"];
+export type TerminologyCreateDTO = components["schemas"]["TerminologyCreateDTO"];

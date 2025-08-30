@@ -5,6 +5,7 @@ from app.config.app_config import get_app_config
 from app.routers.auth_router import router as auth_router
 from app.routers.regulation_router import router as regulation_router
 from app.routers.feature_router import router as feature_router
+from app.routers.terminology_router import router as terminology_router
 
 app = FastAPI()
 allow_origins = get_app_config().core.allow_origins
@@ -21,3 +22,4 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(regulation_router)
 app.include_router(feature_router)
+app.include_router(terminology_router)

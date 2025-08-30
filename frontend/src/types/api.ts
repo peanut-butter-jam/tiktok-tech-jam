@@ -182,7 +182,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/features/{feature_id}/extract-terminologies": {
+    "/terminologies/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Terminologies
+         * @description Get all terminologies.
+         */
+        get: operations["get_terminologies_terminologies__get"];
+        put?: never;
+        /**
+         * Create Terminology
+         * @description Create a new terminology.
+         */
+        post: operations["create_terminology_terminologies__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/terminologies/{terminology_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Terminology
+         * @description Get a terminology by ID.
+         */
+        get: operations["get_terminology_terminologies__terminology_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/terminologies/csv": {
         parameters: {
             query?: never;
             header?: never;
@@ -192,11 +236,11 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Extract Terminologies For Feature
-         * @description Test endpoint: Extract terminology mappings for a specific feature.
-         *     This will run the terminology mapping agent and return the results without updating the feature.
+         * Import Terminologies From Csv
+         * @description Import terminologies from a CSV file.
+         *     Expected CSV format: key,value
          */
-        post: operations["extract_terminologies_for_feature_features__feature_id__extract_terminologies_post"];
+        post: operations["import_terminologies_from_csv_terminologies_csv_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -209,6 +253,14 @@ export interface components {
     schemas: {
         /** Body_import_features_from_csv_features_csv_post */
         Body_import_features_from_csv_features_csv_post: {
+            /**
+             * Csv File
+             * Format: binary
+             */
+            csv_file: string;
+        };
+        /** Body_import_terminologies_from_csv_terminologies_csv_post */
+        Body_import_terminologies_from_csv_terminologies_csv_post: {
             /**
              * Csv File
              * Format: binary
@@ -328,9 +380,7 @@ export interface components {
              * Terminologies
              * @description Terminology mappings
              */
-            terminologies?: {
-                [key: string]: string;
-            } | null;
+            terminologies?: components["schemas"]["Mapping"][] | null;
             /**
              * Checks
              * @description List of associated checks for this feature
@@ -357,9 +407,7 @@ export interface components {
              * Terminologies
              * @description Terminology mappings
              */
-            terminologies?: {
-                [key: string]: string;
-            } | null;
+            terminologies?: components["schemas"]["Mapping"][] | null;
         };
         /**
          * FlagType
@@ -370,6 +418,19 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** Mapping */
+        Mapping: {
+            /**
+             * Key
+             * @description The short form (e.g., abbreviation or acronym)
+             */
+            key: string;
+            /**
+             * Value
+             * @description The corresponding full form
+             */
+            value: string;
         };
         /** ReconcileCheckResultRequest */
         ReconcileCheckResultRequest: {
@@ -478,6 +539,50 @@ export interface components {
          * @enum {string}
          */
         Status: "pending" | "completed" | "failed";
+        /**
+         * TerminologyCreateDTO
+         * @description Data Transfer Object for creating a Terminology
+         */
+        TerminologyCreateDTO: {
+            /**
+             * Key
+             * @description The terminology key
+             */
+            key: string;
+            /**
+             * Value
+             * @description The terminology value
+             */
+            value: string;
+        };
+        /**
+         * TerminologyDTO
+         * @description Data Transfer Object for Terminology
+         */
+        TerminologyDTO: {
+            /**
+             * Key
+             * @description The terminology key
+             */
+            key: string;
+            /**
+             * Value
+             * @description The terminology value
+             */
+            value: string;
+            /** Id */
+            id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -892,12 +997,65 @@ export interface operations {
             };
         };
     };
-    extract_terminologies_for_feature_features__feature_id__extract_terminologies_post: {
+    get_terminologies_terminologies__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TerminologyDTO"][];
+                };
+            };
+        };
+    };
+    create_terminology_terminologies__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TerminologyCreateDTO"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TerminologyDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_terminology_terminologies__terminology_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                feature_id: number;
+                terminology_id: number;
             };
             cookie?: never;
         };
@@ -909,7 +1067,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["TerminologyDTO"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_terminologies_from_csv_terminologies_csv_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_terminologies_from_csv_terminologies_csv_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TerminologyDTO"][];
                 };
             };
             /** @description Validation Error */
