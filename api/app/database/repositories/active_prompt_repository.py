@@ -1,8 +1,10 @@
-from app.database.schemas.active_prompt import ActivePrompt
-from app.database.repositories.session import AsyncDbSessionDep
-from app.database.repositories.base_repository import BaseRepository
+from contextlib import asynccontextmanager
 from typing import Annotated
 from fastapi import Depends
+
+from app.database.schemas.active_prompt import ActivePrompt
+from app.database.repositories.session import AsyncDbSessionDep, async_db_session_context
+from app.database.repositories.base_repository import BaseRepository
 
 
 class ActivePromptRepository(BaseRepository[ActivePrompt]):
@@ -12,3 +14,12 @@ class ActivePromptRepository(BaseRepository[ActivePrompt]):
 
 
 ActivePromptRepositoryDep = Annotated[ActivePromptRepository, Depends(ActivePromptRepository)]
+
+
+@asynccontextmanager
+async def active_prompt_repository_context():
+    """
+    Context manager for ActivePromptRepository.
+    """
+    async with async_db_session_context() as session:
+        yield ActivePromptRepository(session)

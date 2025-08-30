@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, FileText, List, MessageSquare, Shield } from "lucide-react";
+import { Home, FileText, List, MessageSquare, Shield, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 
@@ -8,6 +8,7 @@ const NavBar = () => {
     { to: "/", icon: Home, label: "Home" },
     { to: "/regulations", icon: FileText, label: "Regulations" },
     { to: "/features", icon: List, label: "Features" },
+    { to: "/terminologies", icon: BookOpen, label: "Terminologies" },
   ];
 
   return (

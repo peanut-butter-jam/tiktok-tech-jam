@@ -9,6 +9,7 @@ import RegulationUpload from "./pages/regulation-upload";
 import { Chatbot } from "./components/chatbot";
 import { useChatbot } from "./hooks/use-chatbot";
 import FeaturesPage from "./pages/feature";
+import TerminologyPage from "./pages/terminology";
 
 const App: React.FC = () => {
     const { sendMessage } = useChatbot();
@@ -24,6 +25,7 @@ const App: React.FC = () => {
                     element={<RegulationUpload />}
                 />
                 <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/terminologies" element={<TerminologyPage />} />
             </Routes>
             <Toaster richColors />
             <Chatbot onSendMessage={sendMessage} />

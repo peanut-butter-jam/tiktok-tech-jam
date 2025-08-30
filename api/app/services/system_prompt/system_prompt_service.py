@@ -1,19 +1,23 @@
+from contextlib import asynccontextmanager
 from typing import Annotated, Dict
-
 from fastapi import Depends
 from sqlalchemy.orm import selectinload
 
-from app.config.app_config import FeatEvalConfigDep
+from app.config.app_config import FeatEvalConfigDep, get_app_config
 from app.dtos.system_prompt_dto import (
     ActivePromptDTO,
     SystemPromptVersionCreateDTO,
     SystemPromptVersionDTO,
 )
-from app.database.repositories.active_prompt_repository import ActivePromptRepositoryDep
+from app.database.repositories.active_prompt_repository import (
+    ActivePromptRepositoryDep,
+    active_prompt_repository_context,
+)
 from app.database.schemas.active_prompt import ActivePrompt
 from app.database.schemas.enums.agent_type import AgentType
 from app.database.repositories.system_prompt_version_repository import (
     SystemPromptVersionRepositoryDep,
+    system_prompt_version_repository_context,
 )
 
 
@@ -48,10 +52,8 @@ class SystemPromptService:
     async def get_active_prompt_text(self, agent_type: AgentType) -> str:
         active_prompt = await self.get_active_prompt(agent_type)
         if not active_prompt:
-            print(f"Using default prompt for agent type: {agent_type}")
             return self.default_prompts[agent_type]
 
-        print(f"Using prompt with version {active_prompt.id} for agent type: {agent_type}")
         return active_prompt.system_prompt
 
     async def patch_prompt(self, new_version: SystemPromptVersionCreateDTO) -> None:
@@ -73,3 +75,21 @@ class SystemPromptService:
 
 
 SystemPromptServiceDep = Annotated[SystemPromptService, Depends(SystemPromptService)]
+
+
+@asynccontextmanager
+async def system_prompt_service_context():
+    """
+    Context manager for SystemPrompt.
+    """
+    feat_eval_config = get_app_config().feat_eval
+
+    async with (
+        system_prompt_version_repository_context() as system_prompt_version_repository,
+        active_prompt_repository_context() as active_prompt_repository,
+    ):
+        yield SystemPromptService(
+            system_prompt_version_repository=system_prompt_version_repository,
+            active_prompt_repository=active_prompt_repository,
+            default_prompts=get_default_prompts(feat_eval_config),
+        )

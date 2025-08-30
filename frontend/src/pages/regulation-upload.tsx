@@ -7,6 +7,7 @@ import { useRegulationUploadFlow } from "@/hooks/use-regulations";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { toast } from "sonner";
 
 const RegulationUpload: React.FC = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -27,19 +28,19 @@ const RegulationUpload: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!uploadedFile) {
-      alert("Please upload a file before submitting.");
+      toast.error("Please upload a file before submitting.");
       return;
     }
 
     if (!title.trim()) {
-      alert("Please provide a title for the regulation.");
+      toast.error("Please provide a title for the regulation.");
       return;
     }
 
     try {
       const regulation = await uploadRegulationWithFile(uploadedFile, title.trim());
-      alert(`Regulation "${regulation.title}" uploaded successfully!`);
-      
+      toast.success(`Regulation "${regulation.title}" uploaded successfully!`);
+
       // Reset form
       setUploadedFile(null);
       setTitle("");
