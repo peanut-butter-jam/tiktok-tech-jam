@@ -1,4 +1,4 @@
-# Regulation Compliance Syste
+# Regulation Compliance System
 
 This repository is a boilerplate codebase for a full-stack application using the following technologies:
 
@@ -11,8 +11,6 @@ This repository is a boilerplate codebase for a full-stack application using the
 -   Alembic: For database migrations.
 -   ESLint & Prettier: For code linting and formatting.
 -   Docker: For containerizing the application and managing dependencies.
-
----
 
 ## Architecture
 
