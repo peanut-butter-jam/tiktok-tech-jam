@@ -11,21 +11,24 @@ import { useChatbot } from "./hooks/use-chatbot";
 import FeaturesPage from "./pages/feature";
 
 const App: React.FC = () => {
-  const { sendMessage } = useChatbot();
+    const { sendMessage } = useChatbot();
 
-  return (
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/regulations" element={<RegulationsPage />} />
-        <Route path="/regulations/:id" element={<RegulationView />} />
-        <Route path="/regulations/upload" element={<RegulationUpload />} />
-        <Route path="/features" element={<FeaturesPage />} />
-      </Routes>
-      <Toaster richColors />
-      <Chatbot onSendMessage={sendMessage} />
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <Routes>
+                <Route path="/" element={<MainPage />} />
+                <Route path="/regulations" element={<RegulationsPage />} />
+                <Route path="/regulations/:id" element={<RegulationView />} />
+                <Route
+                    path="/regulations/upload"
+                    element={<RegulationUpload />}
+                />
+                <Route path="/features" element={<FeaturesPage />} />
+            </Routes>
+            <Toaster richColors />
+            <Chatbot onSendMessage={sendMessage} />
+        </ThemeProvider>
+    );
 };
 
 export default App;

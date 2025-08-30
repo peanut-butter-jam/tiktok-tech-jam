@@ -12,7 +12,7 @@ const MainPage = () => {
   return (
     <div>
       <NavBar />
-      <section className="bg-gradient-to-r from-primary via-primary-glow to-accent text-white py-20">
+      <section className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="flex items-center justify-center mb-10">
             <Shield className="h-20 w-20 mr-6" />
